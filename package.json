@@ -1,0 +1,16 @@
+{
+  "name": "zenodo-ts",
+  "description": "A Zenodo API client for use with fp-ts.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "homepage": "https://github.com/thewilkybarkid/zenodo-ts",
+  "repository": "github:thewilkybarkid/zenodo-ts",
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "husky": "^7.0.4"
+  },
+  "scripts": {
+    "prepare": "which husky && husky install || true"
+  }
+}
