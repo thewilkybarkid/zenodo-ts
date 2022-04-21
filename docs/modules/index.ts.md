@@ -55,11 +55,18 @@ Added in v0.1.0
 export type Record = {
   id: number
   metadata: {
+    communities?: NonEmptyArray<{
+      id: string
+    }>
     creators: NonEmptyArray<{
       name: string
     }>
     description: string
     doi: Doi
+    language?: string
+    license: {
+      id: string
+    }
     resource_type:
       | {
           type:

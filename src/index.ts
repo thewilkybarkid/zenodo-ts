@@ -30,11 +30,18 @@ import ReaderTaskEither = RTE.ReaderTaskEither
 export type Record = {
   id: number
   metadata: {
+    communities?: NonEmptyArray<{
+      id: string
+    }>
     creators: NonEmptyArray<{
       name: string
     }>
     description: string
     doi: Doi
+    language?: string
+    license: {
+      id: string
+    }
     resource_type:
       | {
           type:
@@ -181,17 +188,23 @@ export const RecordC: Codec<string, string, Record> = pipe(
   C.compose(
     C.struct({
       id: C.number,
-      metadata: C.struct({
-        creators: NonEmptyArrayC(
-          C.struct({
-            name: C.string,
+      metadata: pipe(
+        C.struct({
+          creators: NonEmptyArrayC(
+            C.struct({
+              name: C.string,
+            }),
+          ),
+          description: C.string,
+          doi: DoiC,
+          license: C.struct({
+            id: C.string,
           }),
-        ),
-        description: C.string,
-        doi: DoiC,
-        resource_type: ResourceTypeC,
-        title: C.string,
-      }),
+          resource_type: ResourceTypeC,
+          title: C.string,
+        }),
+        C.intersect(C.partial({ communities: NonEmptyArrayC(C.struct({ id: C.string })), language: C.string })),
+      ),
     }),
   ),
 )

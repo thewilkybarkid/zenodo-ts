@@ -56,11 +56,9 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
             .filter(isNonEmpty),
           description: fc.string(),
           doi: doi(),
-          title: fc.string(),
-        }),
-      }),
-      fc.record({
-        metadata: fc.record({
+          license: fc.record({
+            id: fc.string(),
+          }),
           resource_type: fc.oneof(
             fc.record({
               type: fc.constantFrom(
@@ -110,7 +108,24 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
               ),
             }),
           ),
+          title: fc.string(),
         }),
+      }),
+      fc.record({
+        metadata: fc.record(
+          {
+            communities: fc
+              .array(
+                fc.record({
+                  id: fc.string(),
+                }),
+                { minLength: 1 },
+              )
+              .filter(isNonEmpty),
+            language: fc.string(),
+          },
+          { withDeletedKeys: true },
+        ),
       }),
     )
     .map(records => merge.withOptions({ mergeArrays: false }, ...records))
