@@ -1,3 +1,4 @@
+import { Doi } from 'doi-ts'
 import { expectTypeOf } from 'expect-type'
 import * as C from 'io-ts/Codec'
 import * as _ from '../src'
@@ -12,6 +13,9 @@ declare const record: Record
 //
 
 expectTypeOf(record.id).toEqualTypeOf<number>()
+expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
+expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
+expectTypeOf(record.metadata.title).toEqualTypeOf<string>()
 
 //
 // RecordC

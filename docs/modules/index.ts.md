@@ -40,6 +40,53 @@ Added in v0.1.0
 ```ts
 export type Record = {
   id: number
+  metadata: {
+    creators: NonEmptyArray<{
+      name: string
+    }>
+    description: string
+    doi: Doi
+    resource_type:
+      | {
+          type:
+            | 'dataset'
+            | 'figure'
+            | 'lesson'
+            | 'other'
+            | 'physicalobject'
+            | 'poster'
+            | 'presentation'
+            | 'software'
+            | 'video'
+        }
+      | {
+          type: 'image'
+          subtype: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
+        }
+      | {
+          type: 'publication'
+          subtype:
+            | 'annotationcollection'
+            | 'article'
+            | 'book'
+            | 'conferencepaper'
+            | 'datamanagementplan'
+            | 'deliverable'
+            | 'milestone'
+            | 'other'
+            | 'patent'
+            | 'preprint'
+            | 'proposal'
+            | 'report'
+            | 'section'
+            | 'softwaredocumentation'
+            | 'taxonomictreatment'
+            | 'technicalnote'
+            | 'thesis'
+            | 'workingpaper'
+        }
+    title: string
+  }
 }
 ```
 
