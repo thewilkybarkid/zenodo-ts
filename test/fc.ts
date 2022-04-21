@@ -1,10 +1,14 @@
 import { Doi, isDoi } from 'doi-ts'
 import * as fc from 'fast-check'
+import { Response } from 'fetch-fp-ts'
 import { isNonEmpty } from 'fp-ts/Array'
+import { Headers } from 'node-fetch'
 import merge from 'ts-deepmerge'
 import * as _ from '../src'
 
 export * from 'fast-check'
+
+export const error = (): fc.Arbitrary<Error> => fc.string().map(error => new Error(error))
 
 export const doi = (): fc.Arbitrary<Doi> =>
   fc
@@ -14,6 +18,27 @@ export const doi = (): fc.Arbitrary<Doi> =>
     )
     .map(([prefix, suffix]) => `10.${prefix}/${suffix}` as Doi)
     .filter(isDoi)
+
+const headerName = () =>
+  fc.stringOf(
+    fc.char().filter(char => /^[\^_`a-zA-Z\-0-9!#$%&'*+.|~]$/.test(char)),
+    { minLength: 1 },
+  )
+
+const headers = () =>
+  fc.option(fc.dictionary(headerName(), fc.string()), { nil: undefined }).map(init => new Headers(init))
+
+export const response = ({
+  status,
+  text,
+}: { status?: fc.Arbitrary<number>; text?: fc.Arbitrary<string | Promise<string>> } = {}): fc.Arbitrary<Response> =>
+  fc.record({
+    headers: headers(),
+    status: status ?? fc.integer(),
+    statusText: fc.string(),
+    url: fc.string(),
+    text: fc.func((text ?? fc.string()).map(text => Promise.resolve(text))),
+  })
 
 export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
   fc

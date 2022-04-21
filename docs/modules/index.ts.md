@@ -14,6 +14,8 @@ Added in v0.1.0
 
 - [codecs](#codecs)
   - [RecordC](#recordc)
+- [constructors](#constructors)
+  - [getRecord](#getrecord)
 - [model](#model)
   - [Record (type alias)](#record-type-alias)
 
@@ -27,6 +29,18 @@ Added in v0.1.0
 
 ```ts
 export declare const RecordC: C.Codec<string, string, Record>
+```
+
+Added in v0.1.0
+
+# constructors
+
+## getRecord
+
+**Signature**
+
+```ts
+export declare const getRecord: (id: number) => ReaderTaskEither<FetchEnv, unknown, Record>
 ```
 
 Added in v0.1.0

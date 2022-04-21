@@ -2,17 +2,22 @@
  * @since 0.1.0
  */
 import { Doi, isDoi } from 'doi-ts'
+import * as F from 'fetch-fp-ts'
 import { isNonEmpty } from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as J from 'fp-ts/Json'
 import * as NEA from 'fp-ts/NonEmptyArray'
-import { pipe } from 'fp-ts/function'
+import * as RTE from 'fp-ts/ReaderTaskEither'
+import { identity, pipe } from 'fp-ts/function'
+import { StatusCodes } from 'http-status-codes'
 import * as C from 'io-ts/Codec'
 import * as D from 'io-ts/Decoder'
 import safeStableStringify from 'safe-stable-stringify'
 
 import Codec = C.Codec
+import FetchEnv = F.FetchEnv
 import NonEmptyArray = NEA.NonEmptyArray
+import ReaderTaskEither = RTE.ReaderTaskEither
 
 // -------------------------------------------------------------------------------------
 // model
@@ -72,6 +77,23 @@ export type Record = {
     title: string
   }
 }
+
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category constructors
+ * @since 0.1.0
+ */
+export const getRecord: (id: number) => ReaderTaskEither<FetchEnv, unknown, Record> = id =>
+  pipe(
+    new URL(id.toString(), 'https://zenodo.org/api/records/'),
+    F.Request('GET'),
+    F.send,
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
+    RTE.chainTaskEitherKW(F.decode(RecordC)),
+  )
 
 // -------------------------------------------------------------------------------------
 // codecs
