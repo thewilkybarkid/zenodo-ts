@@ -9,6 +9,36 @@ import * as fc from './fc'
 describe('zenodo-ts', () => {
   describe('constructors', () => {
     describe('getRecord', () => {
+      test('with a Zenodo URL', async () => {
+        await fc.assert(
+          fc.asyncProperty(fc.url(), fc.integer(), fc.response(), async (zenodoUrl, id, response) => {
+            const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+            await _.getRecord(id)({ fetch, zenodoUrl })()
+
+            expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/${id.toString()}`, {
+              headers: {},
+              method: 'GET',
+            })
+          }),
+        )
+      })
+
+      test('without a Zenodo URL', async () => {
+        await fc.assert(
+          fc.asyncProperty(fc.integer(), fc.response(), async (id, response) => {
+            const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+            await _.getRecord(id)({ fetch })()
+
+            expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/${id.toString()}`, {
+              headers: {},
+              method: 'GET',
+            })
+          }),
+        )
+      })
+
       test('when the record can be decoded', async () => {
         await fc.assert(
           fc.asyncProperty(

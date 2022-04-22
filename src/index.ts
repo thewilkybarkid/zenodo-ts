@@ -7,8 +7,9 @@ import { isNonEmpty } from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as J from 'fp-ts/Json'
 import * as NEA from 'fp-ts/NonEmptyArray'
+import * as R from 'fp-ts/Reader'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { identity, pipe } from 'fp-ts/function'
+import { flow, identity, pipe } from 'fp-ts/function'
 import { StatusCodes } from 'http-status-codes'
 import * as C from 'io-ts/Codec'
 import * as D from 'io-ts/Decoder'
@@ -85,6 +86,14 @@ export type Record = {
   }
 }
 
+/**
+ * @category model
+ * @since 0.1.0
+ */
+export interface ZenodoEnv extends FetchEnv {
+  zenodoUrl?: URL
+}
+
 // -------------------------------------------------------------------------------------
 // constructors
 // -------------------------------------------------------------------------------------
@@ -93,11 +102,10 @@ export type Record = {
  * @category constructors
  * @since 0.1.0
  */
-export const getRecord: (id: number) => ReaderTaskEither<FetchEnv, unknown, Record> = id =>
+export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Record> = id =>
   pipe(
-    new URL(id.toString(), 'https://zenodo.org/api/records/'),
-    F.Request('GET'),
-    F.send,
+    RTE.fromReader(zenodoUrl(`records/${id.toString()}`)),
+    RTE.chainW(flow(F.Request('GET'), F.send)),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordC)),
   )
@@ -208,3 +216,10 @@ export const RecordC: Codec<string, string, Record> = pipe(
     }),
   ),
 )
+
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+
+const zenodoUrl = (path: string) =>
+  R.asks(({ zenodoUrl }: ZenodoEnv) => new URL(`/api/${path}`, zenodoUrl ?? 'https://zenodo.org/'))

@@ -18,6 +18,7 @@ Added in v0.1.0
   - [getRecord](#getrecord)
 - [model](#model)
   - [Record (type alias)](#record-type-alias)
+  - [ZenodoEnv (interface)](#zenodoenv-interface)
 
 ---
 
@@ -40,7 +41,7 @@ Added in v0.1.0
 **Signature**
 
 ```ts
-export declare const getRecord: (id: number) => ReaderTaskEither<FetchEnv, unknown, Record>
+export declare const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Record>
 ```
 
 Added in v0.1.0
@@ -108,6 +109,18 @@ export type Record = {
         }
     title: string
   }
+}
+```
+
+Added in v0.1.0
+
+## ZenodoEnv (interface)
+
+**Signature**
+
+```ts
+export interface ZenodoEnv extends FetchEnv {
+  zenodoUrl?: URL
 }
 ```
 

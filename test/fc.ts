@@ -10,6 +10,8 @@ export * from 'fast-check'
 
 export const error = (): fc.Arbitrary<Error> => fc.string().map(error => new Error(error))
 
+export const url = (): fc.Arbitrary<URL> => fc.webUrl().map(url => new URL(url))
+
 export const doi = (): fc.Arbitrary<Doi> =>
   fc
     .tuple(
