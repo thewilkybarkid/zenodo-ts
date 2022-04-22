@@ -94,6 +94,16 @@ export interface ZenodoEnv extends FetchEnv {
   zenodoUrl?: URL
 }
 
+/**
+ * @category model
+ * @since 0.1.1
+ */
+export type Records = {
+  hits: {
+    hits: Array<Record>
+  }
+}
+
 // -------------------------------------------------------------------------------------
 // constructors
 // -------------------------------------------------------------------------------------
@@ -108,6 +118,18 @@ export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Rec
     RTE.chainW(flow(F.Request('GET'), F.send)),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordC)),
+  )
+
+/**
+ * @category constructors
+ * @since 0.1.1
+ */
+export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, unknown, Records> = query =>
+  pipe(
+    RTE.fromReader(zenodoUrl(`records/?${query.toString()}`)),
+    RTE.chainW(flow(F.Request('GET'), F.send)),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
+    RTE.chainTaskEitherKW(F.decode(RecordsC)),
   )
 
 // -------------------------------------------------------------------------------------
@@ -187,32 +209,44 @@ const ResourceTypeC = C.sum('type')({
   }),
 })
 
+const BaseRecordC = C.struct({
+  id: C.number,
+  metadata: pipe(
+    C.struct({
+      creators: NonEmptyArrayC(
+        C.struct({
+          name: C.string,
+        }),
+      ),
+      description: C.string,
+      doi: DoiC,
+      license: C.struct({
+        id: C.string,
+      }),
+      resource_type: ResourceTypeC,
+      title: C.string,
+    }),
+    C.intersect(C.partial({ communities: NonEmptyArrayC(C.struct({ id: C.string })), language: C.string })),
+  ),
+})
+
 /**
  * @category codecs
  * @since 0.1.0
  */
-export const RecordC: Codec<string, string, Record> = pipe(
+export const RecordC: Codec<string, string, Record> = pipe(JsonC, C.compose(BaseRecordC))
+
+/**
+ * @category codecs
+ * @since 0.1.1
+ */
+export const RecordsC: Codec<string, string, Records> = pipe(
   JsonC,
   C.compose(
     C.struct({
-      id: C.number,
-      metadata: pipe(
-        C.struct({
-          creators: NonEmptyArrayC(
-            C.struct({
-              name: C.string,
-            }),
-          ),
-          description: C.string,
-          doi: DoiC,
-          license: C.struct({
-            id: C.string,
-          }),
-          resource_type: ResourceTypeC,
-          title: C.string,
-        }),
-        C.intersect(C.partial({ communities: NonEmptyArrayC(C.struct({ id: C.string })), language: C.string })),
-      ),
+      hits: C.struct({
+        hits: C.array(BaseRecordC),
+      }),
     }),
   ),
 )

@@ -14,10 +14,13 @@ Added in v0.1.0
 
 - [codecs](#codecs)
   - [RecordC](#recordc)
+  - [RecordsC](#recordsc)
 - [constructors](#constructors)
   - [getRecord](#getrecord)
+  - [getRecords](#getrecords)
 - [model](#model)
   - [Record (type alias)](#record-type-alias)
+  - [Records (type alias)](#records-type-alias)
   - [ZenodoEnv (interface)](#zenodoenv-interface)
 
 ---
@@ -34,6 +37,16 @@ export declare const RecordC: C.Codec<string, string, Record>
 
 Added in v0.1.0
 
+## RecordsC
+
+**Signature**
+
+```ts
+export declare const RecordsC: C.Codec<string, string, Records>
+```
+
+Added in v0.1.1
+
 # constructors
 
 ## getRecord
@@ -45,6 +58,16 @@ export declare const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unkn
 ```
 
 Added in v0.1.0
+
+## getRecords
+
+**Signature**
+
+```ts
+export declare const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, unknown, Records>
+```
+
+Added in v0.1.1
 
 # model
 
@@ -113,6 +136,20 @@ export type Record = {
 ```
 
 Added in v0.1.0
+
+## Records (type alias)
+
+**Signature**
+
+```ts
+export type Records = {
+  hits: {
+    hits: Array<Record>
+  }
+}
+```
+
+Added in v0.1.1
 
 ## ZenodoEnv (interface)
 

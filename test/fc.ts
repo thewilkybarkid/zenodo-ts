@@ -12,6 +12,9 @@ export const error = (): fc.Arbitrary<Error> => fc.string().map(error => new Err
 
 export const url = (): fc.Arbitrary<URL> => fc.webUrl().map(url => new URL(url))
 
+export const urlSearchParams = (): fc.Arbitrary<URLSearchParams> =>
+  fc.webQueryParameters().map(params => new URLSearchParams(params))
+
 export const doi = (): fc.Arbitrary<Doi> =>
   fc
     .tuple(
@@ -131,3 +134,10 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
       }),
     )
     .map(records => merge.withOptions({ mergeArrays: false }, ...records))
+
+export const zenodoRecords = (): fc.Arbitrary<_.Records> =>
+  fc.record({
+    hits: fc.record({
+      hits: fc.array(zenodoRecord()),
+    }),
+  })

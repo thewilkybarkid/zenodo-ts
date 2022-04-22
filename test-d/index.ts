@@ -7,11 +7,14 @@ import * as _ from '../src'
 
 import Codec = C.Codec
 import Record = _.Record
+import Records = _.Records
 import ReaderTaskEither = RTE.ReaderTaskEither
 import ZenodoEnv = _.ZenodoEnv
 
 declare const number: number
+declare const query: URLSearchParams
 declare const record: Record
+declare const records: Records
 declare const zenodoEnv: ZenodoEnv
 
 //
@@ -22,6 +25,12 @@ expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
 expectTypeOf(record.metadata.title).toEqualTypeOf<string>()
+
+//
+// Records
+//
+
+expectTypeOf(records.hits.hits).toEqualTypeOf<Array<Record>>()
 
 //
 // ZenodoEnv
@@ -37,7 +46,19 @@ expectTypeOf(zenodoEnv.zenodoUrl).toEqualTypeOf<URL | undefined>()
 expectTypeOf(_.getRecord(number)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unknown, Record>>()
 
 //
+// getRecords
+//
+
+expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unknown, Records>>()
+
+//
 // RecordC
 //
 
 expectTypeOf(_.RecordC).toEqualTypeOf<Codec<string, string, Record>>()
+
+//
+// RecordsC
+//
+
+expectTypeOf(_.RecordsC).toEqualTypeOf<Codec<string, string, Records>>()
