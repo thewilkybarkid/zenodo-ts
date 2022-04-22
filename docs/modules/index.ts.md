@@ -77,6 +77,8 @@ Added in v0.1.1
 
 ```ts
 export type Record = {
+  conceptdoi: Doi
+  conceptrecid: number
   id: number
   metadata: {
     communities?: NonEmptyArray<{

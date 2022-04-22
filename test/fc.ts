@@ -49,6 +49,8 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
   fc
     .tuple(
       fc.record({
+        conceptdoi: doi(),
+        conceptrecid: fc.integer(),
         id: fc.integer(),
         metadata: fc.record({
           creators: fc

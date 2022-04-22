@@ -29,6 +29,8 @@ import ReaderTaskEither = RTE.ReaderTaskEither
  * @since 0.1.0
  */
 export type Record = {
+  conceptdoi: Doi
+  conceptrecid: number
   id: number
   metadata: {
     communities?: NonEmptyArray<{
@@ -152,6 +154,17 @@ const JsonC = C.make(
 const NonEmptyArrayC = <O, A>(codec: Codec<unknown, O, A>) =>
   C.make(pipe(D.array(codec), D.refine(isNonEmpty, 'NonEmptyArray')), C.array(codec))
 
+const NumberFromStringC = C.make(
+  pipe(
+    D.string,
+    D.parse(s => {
+      const n = +s
+      return isNaN(n) || s.trim() === '' ? D.failure(s, 'Not a number') : D.success(n)
+    }),
+  ),
+  { encode: String },
+)
+
 const ResourceTypeC = C.sum('type')({
   dataset: C.struct({
     type: C.literal('dataset'),
@@ -210,6 +223,8 @@ const ResourceTypeC = C.sum('type')({
 })
 
 const BaseRecordC = C.struct({
+  conceptdoi: DoiC,
+  conceptrecid: NumberFromStringC,
   id: C.number,
   metadata: pipe(
     C.struct({
