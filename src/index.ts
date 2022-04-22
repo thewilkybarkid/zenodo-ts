@@ -88,7 +88,7 @@ export type Record = {
 
 /**
  * @category model
- * @since 0.1.0
+ * @since 0.1.1
  */
 export interface ZenodoEnv extends FetchEnv {
   zenodoUrl?: URL

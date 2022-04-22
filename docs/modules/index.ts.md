@@ -124,4 +124,4 @@ export interface ZenodoEnv extends FetchEnv {
 }
 ```
 
-Added in v0.1.0
+Added in v0.1.1
