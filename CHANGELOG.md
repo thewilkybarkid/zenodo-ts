@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.0...v0.1.1) (2022-05-12)
+
+
+### Features
+
+* add communities, language and license to Record ([ada3b71](https://github.com/thewilkybarkid/zenodo-ts/commit/ada3b71e689668694ae8734f070b2b2b18cd470c))
+* add concept IDs to Record ([fbeaf58](https://github.com/thewilkybarkid/zenodo-ts/commit/fbeaf5867e8888685e24911ba10c1ecaf8fbf91f))
+* search for records ([bacef2d](https://github.com/thewilkybarkid/zenodo-ts/commit/bacef2d33033602551234fbae5bc36f496627f8f))
+* set the base Zenodo URL ([5d3a39c](https://github.com/thewilkybarkid/zenodo-ts/commit/5d3a39c6d4942504cad28731e4655ae6063493fd))
+
 ## 0.1.0 (2022-04-21)
 
 
