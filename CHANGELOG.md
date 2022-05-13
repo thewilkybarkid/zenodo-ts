@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.1...v0.1.2) (2022-05-13)
+
+
+### Features
+
+* add pre-reserved DOI to UnsubmittedDeposition ([7431f0d](https://github.com/thewilkybarkid/zenodo-ts/commit/7431f0d59f37debbc3ba38e27d2100aad49f7a6d))
+* add related identifiers to Record ([34334fa](https://github.com/thewilkybarkid/zenodo-ts/commit/34334fa5f3bae739064cd2bcb7acc0b4c4f682cd))
+* create a deposition ([287fdb6](https://github.com/thewilkybarkid/zenodo-ts/commit/287fdb63edaf21c5e70545d1e0b9dab1efc00d45))
+
 ### [0.1.1](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.0...v0.1.1) (2022-05-12)
 
 
