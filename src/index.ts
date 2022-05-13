@@ -151,7 +151,11 @@ export type DepositMetadata = {
  */
 export type UnsubmittedDeposition = {
   id: number
-  metadata: DepositMetadata
+  metadata: DepositMetadata & {
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
   state: 'unsubmitted'
   submitted: false
 }
@@ -453,7 +457,16 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
   C.compose(
     C.struct({
       id: C.number,
-      metadata: DepositMetadataC,
+      metadata: pipe(
+        DepositMetadataC,
+        C.intersect(
+          C.struct({
+            prereserve_doi: C.struct({
+              doi: DoiC,
+            }),
+          }),
+        ),
+      ),
       state: C.literal('unsubmitted'),
       submitted: C.literal(false),
     }),

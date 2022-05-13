@@ -59,7 +59,8 @@ expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
 //
 
 expectTypeOf(unsubmittedDeposition.id).toEqualTypeOf<number>()
-expectTypeOf(unsubmittedDeposition.metadata).toEqualTypeOf<DepositMetadata>()
+expectTypeOf(unsubmittedDeposition.metadata).toMatchTypeOf<DepositMetadata>()
+expectTypeOf(unsubmittedDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
 expectTypeOf(unsubmittedDeposition.state).toEqualTypeOf<'unsubmitted'>()
 expectTypeOf(unsubmittedDeposition.submitted).toEqualTypeOf<false>()
 

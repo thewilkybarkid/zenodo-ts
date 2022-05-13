@@ -248,7 +248,11 @@ Added in v0.1.1
 ```ts
 export type UnsubmittedDeposition = {
   id: number
-  metadata: DepositMetadata
+  metadata: DepositMetadata & {
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
   state: 'unsubmitted'
   submitted: false
 }

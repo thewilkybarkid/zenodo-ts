@@ -228,7 +228,16 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
 export const zenodoUnsubmittedDeposition = (): fc.Arbitrary<_.UnsubmittedDeposition> =>
   fc.record({
     id: fc.integer(),
-    metadata: zenodoDepositMetadata(),
+    metadata: fc
+      .tuple(
+        zenodoDepositMetadata(),
+        fc.record({
+          prereserve_doi: fc.record({
+            doi: doi(),
+          }),
+        }),
+      )
+      .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas)),
     state: fc.constant('unsubmitted'),
     submitted: fc.constant(false),
   })
