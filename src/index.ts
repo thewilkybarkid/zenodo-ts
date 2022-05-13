@@ -45,6 +45,12 @@ export type Record = {
     license: {
       id: string
     }
+    related_identifiers?: NonEmptyArray<{
+      scheme: string
+      identifier: string
+      relation: string
+      resource_type?: string
+    }>
     resource_type:
       | {
           type:
@@ -241,7 +247,18 @@ const BaseRecordC = C.struct({
       resource_type: ResourceTypeC,
       title: C.string,
     }),
-    C.intersect(C.partial({ communities: NonEmptyArrayC(C.struct({ id: C.string })), language: C.string })),
+    C.intersect(
+      C.partial({
+        communities: NonEmptyArrayC(C.struct({ id: C.string })),
+        language: C.string,
+        related_identifiers: NonEmptyArrayC(
+          pipe(
+            C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
+            C.intersect(C.partial({ resource_type: C.string })),
+          ),
+        ),
+      }),
+    ),
   ),
 })
 

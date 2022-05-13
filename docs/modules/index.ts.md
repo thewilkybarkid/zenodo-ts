@@ -93,6 +93,12 @@ export type Record = {
     license: {
       id: string
     }
+    related_identifiers?: NonEmptyArray<{
+      scheme: string
+      identifier: string
+      relation: string
+      resource_type?: string
+    }>
     resource_type:
       | {
           type:

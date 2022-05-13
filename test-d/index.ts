@@ -1,6 +1,7 @@
 import { Doi } from 'doi-ts'
 import { expectTypeOf } from 'expect-type'
 import { FetchEnv } from 'fetch-fp-ts'
+import { NonEmptyArray } from 'fp-ts/NonEmptyArray'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as C from 'io-ts/Codec'
 import * as _ from '../src'
@@ -24,6 +25,9 @@ declare const zenodoEnv: ZenodoEnv
 expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
+expectTypeOf(record.metadata.related_identifiers).toEqualTypeOf<
+  NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined
+>()
 expectTypeOf(record.metadata.title).toEqualTypeOf<string>()
 
 //

@@ -129,6 +129,20 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 { minLength: 1 },
               )
               .filter(isNonEmpty),
+            related_identifiers: fc
+              .array(
+                fc.record(
+                  {
+                    scheme: fc.string(),
+                    identifier: fc.string(),
+                    relation: fc.string(),
+                    resource_type: fc.string(),
+                  },
+                  { requiredKeys: ['scheme', 'identifier', 'relation'] },
+                ),
+                { minLength: 1 },
+              )
+              .filter(isNonEmpty),
             language: fc.string(),
           },
           { withDeletedKeys: true },
