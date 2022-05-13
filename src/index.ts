@@ -96,10 +96,80 @@ export type Record = {
 
 /**
  * @category model
+ * @since 0.1.2
+ */
+export type DepositMetadata = {
+  creators: NonEmptyArray<{
+    name: string
+  }>
+  description: string
+  title: string
+} & (
+  | {
+      upload_type:
+        | 'dataset'
+        | 'figure'
+        | 'lesson'
+        | 'other'
+        | 'physicalobject'
+        | 'poster'
+        | 'presentation'
+        | 'software'
+        | 'video'
+    }
+  | {
+      upload_type: 'image'
+      image_type: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
+    }
+  | {
+      upload_type: 'publication'
+      publication_type:
+        | 'annotationcollection'
+        | 'article'
+        | 'book'
+        | 'conferencepaper'
+        | 'datamanagementplan'
+        | 'deliverable'
+        | 'milestone'
+        | 'other'
+        | 'patent'
+        | 'preprint'
+        | 'proposal'
+        | 'report'
+        | 'section'
+        | 'softwaredocumentation'
+        | 'taxonomictreatment'
+        | 'technicalnote'
+        | 'thesis'
+        | 'workingpaper'
+    }
+)
+
+/**
+ * @category model
+ * @since 0.1.2
+ */
+export type UnsubmittedDeposition = {
+  id: number
+  metadata: DepositMetadata
+  state: 'unsubmitted'
+  submitted: false
+}
+
+/**
+ * @category model
  * @since 0.1.1
  */
 export interface ZenodoEnv extends FetchEnv {
   zenodoUrl?: URL
+}
+
+/**
+ * @category model
+ * @since 0.1.2
+ */
+export interface ZenodoAuthenticatedEnv extends ZenodoEnv {
+  zenodoApiKey: string
 }
 
 /**
@@ -138,6 +208,27 @@ export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv,
     RTE.chainW(flow(F.Request('GET'), F.send)),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordsC)),
+  )
+
+/**
+ * @category constructors
+ * @since 0.1.2
+ */
+export const createDeposition: (
+  metadata: DepositMetadata,
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = metadata =>
+  pipe(
+    RTE.fromReader(zenodoUrl('deposit/depositions')),
+    RTE.chainReaderK(
+      flow(
+        F.Request('POST'),
+        F.setBody(JSON.stringify({ metadata: DepositMetadataC.encode(metadata) }), 'application/json'),
+        addAuthorizationHeader,
+      ),
+    ),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
   )
 
 // -------------------------------------------------------------------------------------
@@ -228,6 +319,63 @@ const ResourceTypeC = C.sum('type')({
   }),
 })
 
+const UploadTypeC = C.sum('upload_type')({
+  dataset: C.struct({
+    upload_type: C.literal('dataset'),
+  }),
+  figure: C.struct({
+    upload_type: C.literal('figure'),
+  }),
+  image: C.struct({
+    image_type: C.literal('figure', 'plot', 'drawing', 'diagram', 'photo', 'other'),
+    upload_type: C.literal('image'),
+  }),
+  lesson: C.struct({
+    upload_type: C.literal('lesson'),
+  }),
+  other: C.struct({
+    upload_type: C.literal('other'),
+  }),
+  poster: C.struct({
+    upload_type: C.literal('poster'),
+  }),
+  physicalobject: C.struct({
+    upload_type: C.literal('physicalobject'),
+  }),
+  presentation: C.struct({
+    upload_type: C.literal('presentation'),
+  }),
+  publication: C.struct({
+    publication_type: C.literal(
+      'annotationcollection',
+      'book',
+      'section',
+      'conferencepaper',
+      'datamanagementplan',
+      'article',
+      'patent',
+      'preprint',
+      'deliverable',
+      'milestone',
+      'proposal',
+      'report',
+      'softwaredocumentation',
+      'taxonomictreatment',
+      'technicalnote',
+      'thesis',
+      'workingpaper',
+      'other',
+    ),
+    upload_type: C.literal('publication'),
+  }),
+  software: C.struct({
+    upload_type: C.literal('software'),
+  }),
+  video: C.struct({
+    upload_type: C.literal('video'),
+  }),
+})
+
 const BaseRecordC = C.struct({
   conceptdoi: DoiC,
   conceptrecid: NumberFromStringC,
@@ -262,6 +410,19 @@ const BaseRecordC = C.struct({
   ),
 })
 
+const DepositMetadataC = pipe(
+  C.struct({
+    creators: NonEmptyArrayC(
+      C.struct({
+        name: C.string,
+      }),
+    ),
+    description: C.string,
+    title: C.string,
+  }),
+  C.intersect(UploadTypeC),
+)
+
 /**
  * @category codecs
  * @since 0.1.0
@@ -283,9 +444,30 @@ export const RecordsC: Codec<string, string, Records> = pipe(
   ),
 )
 
+/**
+ * @category codecs
+ * @since 0.1.2
+ */
+export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition> = pipe(
+  JsonC,
+  C.compose(
+    C.struct({
+      id: C.number,
+      metadata: DepositMetadataC,
+      state: C.literal('unsubmitted'),
+      submitted: C.literal(false),
+    }),
+  ),
+)
+
 // -------------------------------------------------------------------------------------
 // utils
 // -------------------------------------------------------------------------------------
 
 const zenodoUrl = (path: string) =>
   R.asks(({ zenodoUrl }: ZenodoEnv) => new URL(`/api/${path}`, zenodoUrl ?? 'https://zenodo.org/'))
+
+const addAuthorizationHeader = (request: F.Request) =>
+  R.asks(({ zenodoApiKey }: ZenodoAuthenticatedEnv) =>
+    pipe(request, F.setHeader('Authorization', `Bearer ${zenodoApiKey}`)),
+  )

@@ -7,15 +7,21 @@ import * as C from 'io-ts/Codec'
 import * as _ from '../src'
 
 import Codec = C.Codec
+import DepositMetadata = _.DepositMetadata
 import Record = _.Record
 import Records = _.Records
 import ReaderTaskEither = RTE.ReaderTaskEither
+import UnsubmittedDeposition = _.UnsubmittedDeposition
+import ZenodoAuthenticatedEnv = _.ZenodoAuthenticatedEnv
 import ZenodoEnv = _.ZenodoEnv
 
 declare const number: number
 declare const query: URLSearchParams
 declare const record: Record
 declare const records: Records
+declare const depositMetadata: DepositMetadata
+declare const unsubmittedDeposition: UnsubmittedDeposition
+declare const zenodoAuthenticatedEnv: ZenodoAuthenticatedEnv
 declare const zenodoEnv: ZenodoEnv
 
 //
@@ -37,11 +43,39 @@ expectTypeOf(record.metadata.title).toEqualTypeOf<string>()
 expectTypeOf(records.hits.hits).toEqualTypeOf<Array<Record>>()
 
 //
+// DepositMetadata
+//
+
+expectTypeOf(depositMetadata.creators).toEqualTypeOf<
+  NonEmptyArray<{
+    name: string
+  }>
+>()
+expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
+expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
+
+//
+// UnsubmittedDeposition
+//
+
+expectTypeOf(unsubmittedDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(unsubmittedDeposition.metadata).toEqualTypeOf<DepositMetadata>()
+expectTypeOf(unsubmittedDeposition.state).toEqualTypeOf<'unsubmitted'>()
+expectTypeOf(unsubmittedDeposition.submitted).toEqualTypeOf<false>()
+
+//
 // ZenodoEnv
 //
 
 expectTypeOf(zenodoEnv).toMatchTypeOf<FetchEnv>()
 expectTypeOf(zenodoEnv.zenodoUrl).toEqualTypeOf<URL | undefined>()
+
+//
+// ZenodoAuthenticatedEnv
+//
+
+expectTypeOf(zenodoAuthenticatedEnv).toMatchTypeOf<ZenodoEnv>()
+expectTypeOf(zenodoAuthenticatedEnv.zenodoApiKey).toEqualTypeOf<string>()
 
 //
 // getRecord
@@ -54,6 +88,14 @@ expectTypeOf(_.getRecord(number)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unkn
 //
 
 expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unknown, Records>>()
+
+//
+// createDeposition
+//
+
+expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+>()
 
 //
 // RecordC

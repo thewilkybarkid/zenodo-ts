@@ -205,6 +205,139 @@ describe('zenodo-ts', () => {
         )
       })
     })
+
+    describe('createDeposition', () => {
+      test('with a Zenodo URL', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.url(),
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.response(),
+            async (zenodoUrl, zenodoApiKey, metadata, response) => {
+              const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+              await _.createDeposition(metadata)({ fetch, zenodoApiKey, zenodoUrl })()
+
+              expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
+                body: expect.anything(),
+                headers: {
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                method: 'POST',
+              })
+            },
+          ),
+        )
+      })
+
+      test('without a Zenodo URL', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.response(),
+            async (zenodoApiKey, metadata, response) => {
+              const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+              await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+              expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
+                body: expect.anything(),
+                headers: {
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                method: 'POST',
+              })
+            },
+          ),
+        )
+      })
+
+      test('when the deposition can be decoded', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.zenodoUnsubmittedDeposition().chain(deposition =>
+              fc.tuple(
+                fc.constant(deposition),
+                fc.response({
+                  status: fc.constant(StatusCodes.CREATED),
+                  text: fc.constant(_.UnsubmittedDepositionC.encode(deposition)),
+                }),
+              ),
+            ),
+            async (zenodoApiKey, metadata, [deposition, response]) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(D.success(deposition))
+            },
+          ),
+        )
+      })
+
+      test('when the deposition cannot be decoded', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.response({
+              status: fc.constant(StatusCodes.CREATED),
+              text: fc.string(),
+            }),
+            async (zenodoApiKey, metadata, response) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            },
+          ),
+        )
+      })
+
+      test('when the response has a non-201 status code', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.response({
+              status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+              text: fc.string(),
+            }),
+            async (zenodoApiKey, metadata, response) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(response))
+            },
+          ),
+        )
+      })
+
+      test('when fetch throws an error', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoDepositMetadata(),
+            fc.error(),
+            async (zenodoApiKey, metadata, error) => {
+              const fetch: Fetch = () => Promise.reject(error)
+
+              const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(error))
+            },
+          ),
+        )
+      })
+    })
   })
 
   describe('codecs', () => {
@@ -245,6 +378,27 @@ describe('zenodo-ts', () => {
         fc.assert(
           fc.property(fc.string(), string => {
             const actual = _.RecordsC.decode(string)
+
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          }),
+        )
+      })
+    })
+    describe('UnsubmittedDepositionC', () => {
+      test('when the unsubmitted deposition can be decoded', () => {
+        fc.assert(
+          fc.property(fc.zenodoUnsubmittedDeposition(), unsubmittedDeposition => {
+            const actual = pipe(unsubmittedDeposition, _.UnsubmittedDepositionC.encode, _.UnsubmittedDepositionC.decode)
+
+            expect(actual).toStrictEqual(D.success(unsubmittedDeposition))
+          }),
+        )
+      })
+
+      test('when the unsubmitted deposition cannot be decoded', () => {
+        fc.assert(
+          fc.property(fc.string(), string => {
+            const actual = _.UnsubmittedDepositionC.decode(string)
 
             expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
           }),

@@ -157,3 +157,78 @@ export const zenodoRecords = (): fc.Arbitrary<_.Records> =>
       hits: fc.array(zenodoRecord()),
     }),
   })
+
+export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
+  fc
+    .tuple(
+      fc.record({
+        creators: fc
+          .array(
+            fc.record({
+              name: fc.string(),
+            }),
+            { minLength: 1 },
+          )
+          .filter(isNonEmpty),
+        description: fc.string(),
+        title: fc.string(),
+      }),
+      fc.oneof(
+        fc.record({
+          upload_type: fc.constantFrom(
+            'dataset' as const,
+            'figure' as const,
+            'lesson' as const,
+            'other' as const,
+            'physicalobject' as const,
+            'poster' as const,
+            'presentation' as const,
+            'software' as const,
+            'video' as const,
+          ),
+        }),
+        fc.record({
+          upload_type: fc.constant('image' as const),
+          image_type: fc.constantFrom(
+            'diagram' as const,
+            'drawing' as const,
+            'figure' as const,
+            'other' as const,
+            'photo' as const,
+            'plot' as const,
+          ),
+        }),
+        fc.record({
+          upload_type: fc.constant('publication' as const),
+          publication_type: fc.constantFrom(
+            'annotationcollection' as const,
+            'article' as const,
+            'book' as const,
+            'conferencepaper' as const,
+            'datamanagementplan' as const,
+            'deliverable' as const,
+            'milestone' as const,
+            'other' as const,
+            'patent' as const,
+            'preprint' as const,
+            'proposal' as const,
+            'report' as const,
+            'section' as const,
+            'softwaredocumentation' as const,
+            'taxonomictreatment' as const,
+            'technicalnote' as const,
+            'thesis' as const,
+            'workingpaper' as const,
+          ),
+        }),
+      ),
+    )
+    .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas))
+
+export const zenodoUnsubmittedDeposition = (): fc.Arbitrary<_.UnsubmittedDeposition> =>
+  fc.record({
+    id: fc.integer(),
+    metadata: zenodoDepositMetadata(),
+    state: fc.constant('unsubmitted'),
+    submitted: fc.constant(false),
+  })

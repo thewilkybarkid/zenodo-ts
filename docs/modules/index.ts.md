@@ -15,12 +15,17 @@ Added in v0.1.0
 - [codecs](#codecs)
   - [RecordC](#recordc)
   - [RecordsC](#recordsc)
+  - [UnsubmittedDepositionC](#unsubmitteddepositionc)
 - [constructors](#constructors)
+  - [createDeposition](#createdeposition)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
 - [model](#model)
+  - [DepositMetadata (type alias)](#depositmetadata-type-alias)
   - [Record (type alias)](#record-type-alias)
   - [Records (type alias)](#records-type-alias)
+  - [UnsubmittedDeposition (type alias)](#unsubmitteddeposition-type-alias)
+  - [ZenodoAuthenticatedEnv (interface)](#zenodoauthenticatedenv-interface)
   - [ZenodoEnv (interface)](#zenodoenv-interface)
 
 ---
@@ -47,7 +52,29 @@ export declare const RecordsC: C.Codec<string, string, Records>
 
 Added in v0.1.1
 
+## UnsubmittedDepositionC
+
+**Signature**
+
+```ts
+export declare const UnsubmittedDepositionC: C.Codec<string, string, UnsubmittedDeposition>
+```
+
+Added in v0.1.2
+
 # constructors
+
+## createDeposition
+
+**Signature**
+
+```ts
+export declare const createDeposition: (
+  metadata: DepositMetadata
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+```
+
+Added in v0.1.2
 
 ## getRecord
 
@@ -70,6 +97,61 @@ export declare const getRecords: (query: URLSearchParams) => ReaderTaskEither<Ze
 Added in v0.1.1
 
 # model
+
+## DepositMetadata (type alias)
+
+**Signature**
+
+```ts
+export type DepositMetadata = {
+  creators: NonEmptyArray<{
+    name: string
+  }>
+  description: string
+  title: string
+} & (
+  | {
+      upload_type:
+        | 'dataset'
+        | 'figure'
+        | 'lesson'
+        | 'other'
+        | 'physicalobject'
+        | 'poster'
+        | 'presentation'
+        | 'software'
+        | 'video'
+    }
+  | {
+      upload_type: 'image'
+      image_type: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
+    }
+  | {
+      upload_type: 'publication'
+      publication_type:
+        | 'annotationcollection'
+        | 'article'
+        | 'book'
+        | 'conferencepaper'
+        | 'datamanagementplan'
+        | 'deliverable'
+        | 'milestone'
+        | 'other'
+        | 'patent'
+        | 'preprint'
+        | 'proposal'
+        | 'report'
+        | 'section'
+        | 'softwaredocumentation'
+        | 'taxonomictreatment'
+        | 'technicalnote'
+        | 'thesis'
+        | 'workingpaper'
+    }
+)
+```
+
+Added in v0.1.2
 
 ## Record (type alias)
 
@@ -158,6 +240,33 @@ export type Records = {
 ```
 
 Added in v0.1.1
+
+## UnsubmittedDeposition (type alias)
+
+**Signature**
+
+```ts
+export type UnsubmittedDeposition = {
+  id: number
+  metadata: DepositMetadata
+  state: 'unsubmitted'
+  submitted: false
+}
+```
+
+Added in v0.1.2
+
+## ZenodoAuthenticatedEnv (interface)
+
+**Signature**
+
+```ts
+export interface ZenodoAuthenticatedEnv extends ZenodoEnv {
+  zenodoApiKey: string
+}
+```
+
+Added in v0.1.2
 
 ## ZenodoEnv (interface)
 
