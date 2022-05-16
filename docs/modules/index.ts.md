@@ -20,6 +20,7 @@ Added in v0.1.0
   - [createDeposition](#createdeposition)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
+  - [uploadFile](#uploadfile)
 - [model](#model)
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
   - [Record (type alias)](#record-type-alias)
@@ -95,6 +96,20 @@ export declare const getRecords: (query: URLSearchParams) => ReaderTaskEither<Ze
 ```
 
 Added in v0.1.1
+
+## uploadFile
+
+**Signature**
+
+```ts
+export declare const uploadFile: (upload: {
+  readonly name: string
+  readonly type: string
+  readonly content: string
+}) => (depositon: UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+```
+
+Added in v0.1.3
 
 # model
 
@@ -248,6 +263,9 @@ Added in v0.1.1
 ```ts
 export type UnsubmittedDeposition = {
   id: number
+  links: {
+    bucket: URL
+  }
   metadata: DepositMetadata & {
     prereserve_doi: {
       doi: Doi

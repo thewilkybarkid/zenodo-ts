@@ -3,6 +3,7 @@ import { expectTypeOf } from 'expect-type'
 import { FetchEnv } from 'fetch-fp-ts'
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 import * as C from 'io-ts/Codec'
 import * as _ from '../src'
 
@@ -16,6 +17,7 @@ import ZenodoAuthenticatedEnv = _.ZenodoAuthenticatedEnv
 import ZenodoEnv = _.ZenodoEnv
 
 declare const number: number
+declare const string: string
 declare const query: URLSearchParams
 declare const record: Record
 declare const records: Records
@@ -96,6 +98,14 @@ expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unkn
 
 expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+>()
+
+//
+// uploadFile
+//
+
+expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 >()
 
 //

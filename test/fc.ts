@@ -4,6 +4,7 @@ import { Response } from 'fetch-fp-ts'
 import { isNonEmpty } from 'fp-ts/Array'
 import { Headers } from 'node-fetch'
 import merge from 'ts-deepmerge'
+import { uploadFile } from '../src'
 import * as _ from '../src'
 
 export * from 'fast-check'
@@ -228,6 +229,9 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
 export const zenodoUnsubmittedDeposition = (): fc.Arbitrary<_.UnsubmittedDeposition> =>
   fc.record({
     id: fc.integer(),
+    links: fc.record({
+      bucket: url(),
+    }),
     metadata: fc
       .tuple(
         zenodoDepositMetadata(),

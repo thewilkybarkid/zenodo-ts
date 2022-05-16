@@ -9,11 +9,12 @@ import * as J from 'fp-ts/Json'
 import * as NEA from 'fp-ts/NonEmptyArray'
 import * as R from 'fp-ts/Reader'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { flow, identity, pipe } from 'fp-ts/function'
+import { constVoid, flow, identity, pipe } from 'fp-ts/function'
 import { StatusCodes } from 'http-status-codes'
 import * as C from 'io-ts/Codec'
 import * as D from 'io-ts/Decoder'
 import safeStableStringify from 'safe-stable-stringify'
+import { URL } from 'url'
 
 import Codec = C.Codec
 import FetchEnv = F.FetchEnv
@@ -151,6 +152,9 @@ export type DepositMetadata = {
  */
 export type UnsubmittedDeposition = {
   id: number
+  links: {
+    bucket: URL
+  }
   metadata: DepositMetadata & {
     prereserve_doi: {
       doi: Doi
@@ -235,11 +239,43 @@ export const createDeposition: (
     RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
   )
 
+/**
+ * @category constructors
+ * @since 0.1.3
+ */
+export const uploadFile: (upload: {
+  readonly name: string
+  readonly type: string
+  readonly content: string
+}) => (depositon: UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void> = upload =>
+  flow(
+    deposition => `${deposition.links.bucket.toString()}/${upload.name}`,
+    F.Request('PUT'),
+    F.setBody(upload.content, upload.type),
+    RTE.fromReaderK(addAuthorizationHeader),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.map(constVoid),
+  )
+
 // -------------------------------------------------------------------------------------
 // codecs
 // -------------------------------------------------------------------------------------
 
 const DoiC = C.fromDecoder(D.fromRefinement(isDoi, 'DOI'))
+
+const UrlC = C.make(
+  pipe(
+    D.string,
+    D.parse(s =>
+      E.tryCatch(
+        () => new URL(s),
+        () => D.error(s, 'URL'),
+      ),
+    ),
+  ),
+  { encode: String },
+)
 
 const JsonC = C.make(
   {
@@ -457,6 +493,9 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
   C.compose(
     C.struct({
       id: C.number,
+      links: C.struct({
+        bucket: UrlC,
+      }),
       metadata: pipe(
         DepositMetadataC,
         C.intersect(

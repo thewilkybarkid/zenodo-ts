@@ -338,6 +338,80 @@ describe('zenodo-ts', () => {
         )
       })
     })
+
+    describe('uploadFile', () => {
+      test('when the response has a 201 status code', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.string(),
+            fc.string(),
+            fc.string(),
+            fc.response({
+              status: fc.constant(StatusCodes.CREATED),
+            }),
+            async (zenodoApiKey, deposition, name, type, content, response) => {
+              const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+              const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(D.success(undefined))
+              expect(fetch).toHaveBeenCalledWith(`${deposition.links.bucket.href}/${name}`, {
+                body: content,
+                headers: {
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                  'Content-Type': type,
+                },
+                method: 'PUT',
+              })
+            },
+          ),
+        )
+      })
+
+      test('when the response has a non-201 status code', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.string(),
+            fc.string(),
+            fc.string(),
+            fc.response({
+              status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+            }),
+            async (zenodoApiKey, deposition, name, type, content, response) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(response))
+            },
+          ),
+        )
+      })
+
+      test('when fetch throws an error', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.string(),
+            fc.string(),
+            fc.string(),
+            fc.error(),
+            async (zenodoApiKey, deposition, name, type, content, error) => {
+              const fetch: Fetch = () => Promise.reject(error)
+
+              const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(error))
+            },
+          ),
+        )
+      })
+    })
   })
 
   describe('codecs', () => {

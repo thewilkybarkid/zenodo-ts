@@ -36,7 +36,7 @@ import fetch from 'cross-fetch'
 import * as C from 'fp-ts/Console'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
-import { ZenodoAuthenticatedEnv, createDeposition } from 'zenodo-ts'
+import { ZenodoAuthenticatedEnv, createDeposition, uploadFile } from 'zenodo-ts'
 
 const env: ZenodoAuthenticatedEnv = {
   fetch,
@@ -52,6 +52,13 @@ void pipe(
     upload_type: 'publication',
     publication_type: 'article',
   }),
+  RTE.chainFirst(
+    uploadFile({
+      name: 'silly-string-theory.txt',
+      type: 'text/plain',
+      content: 'The characteristic theme of the works of Stone is the bridge between culture and ...',
+    }),
+  ),
   RTE.chainFirstIOK(deposition => C.log(`State is "${deposition.state}"`)),
 )(env)()
 /*
