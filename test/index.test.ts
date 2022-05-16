@@ -412,6 +412,96 @@ describe('zenodo-ts', () => {
         )
       })
     })
+
+    describe('publishDeposition', () => {
+      test('when the deposition can be decoded', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.zenodoSubmittedDeposition().chain(submittedDeposition =>
+              fc.tuple(
+                fc.constant(submittedDeposition),
+                fc.response({
+                  status: fc.constant(StatusCodes.ACCEPTED),
+                  text: fc.constant(_.SubmittedDepositionC.encode(submittedDeposition)),
+                }),
+              ),
+            ),
+            async (zenodoApiKey, unsubmittedDeposition, [submittedDeposition, response]) => {
+              const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+              const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(D.success(submittedDeposition))
+              expect(fetch).toHaveBeenCalledWith(unsubmittedDeposition.links.publish.href, {
+                headers: {
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                },
+                method: 'POST',
+              })
+            },
+          ),
+        )
+      })
+
+      test('when the deposition cannot be decoded', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.response({
+              status: fc.constant(StatusCodes.ACCEPTED),
+              text: fc.string(),
+            }),
+            async (zenodoApiKey, unsubmittedDeposition, response) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            },
+          ),
+        )
+      })
+
+      test('when the response has a non-202 status code', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.response({
+              status: fc.integer().filter(status => status !== StatusCodes.ACCEPTED),
+              text: fc.string(),
+            }),
+            async (zenodoApiKey, unsubmittedDeposition, response) => {
+              const fetch: Fetch = () => Promise.resolve(response)
+
+              const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(response))
+            },
+          ),
+        )
+      })
+
+      test('when fetch throws an error', async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string(),
+            fc.zenodoUnsubmittedDeposition(),
+            fc.error(),
+            async (zenodoApiKey, unsubmittedDeposition, error) => {
+              const fetch: Fetch = () => Promise.reject(error)
+
+              const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+              expect(actual).toStrictEqual(E.left(error))
+            },
+          ),
+        )
+      })
+    })
   })
 
   describe('codecs', () => {
@@ -458,6 +548,29 @@ describe('zenodo-ts', () => {
         )
       })
     })
+
+    describe('SubmittedDepositionC', () => {
+      test('when the submitted deposition can be decoded', () => {
+        fc.assert(
+          fc.property(fc.zenodoSubmittedDeposition(), submittedDeposition => {
+            const actual = pipe(submittedDeposition, _.SubmittedDepositionC.encode, _.SubmittedDepositionC.decode)
+
+            expect(actual).toStrictEqual(D.success(submittedDeposition))
+          }),
+        )
+      })
+
+      test('when the submitted deposition cannot be decoded', () => {
+        fc.assert(
+          fc.property(fc.string(), string => {
+            const actual = _.SubmittedDepositionC.decode(string)
+
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          }),
+        )
+      })
+    })
+
     describe('UnsubmittedDepositionC', () => {
       test('when the unsubmitted deposition can be decoded', () => {
         fc.assert(

@@ -12,6 +12,7 @@ import DepositMetadata = _.DepositMetadata
 import Record = _.Record
 import Records = _.Records
 import ReaderTaskEither = RTE.ReaderTaskEither
+import SubmittedDeposition = _.SubmittedDeposition
 import UnsubmittedDeposition = _.UnsubmittedDeposition
 import ZenodoAuthenticatedEnv = _.ZenodoAuthenticatedEnv
 import ZenodoEnv = _.ZenodoEnv
@@ -22,6 +23,7 @@ declare const query: URLSearchParams
 declare const record: Record
 declare const records: Records
 declare const depositMetadata: DepositMetadata
+declare const submittedDeposition: SubmittedDeposition
 declare const unsubmittedDeposition: UnsubmittedDeposition
 declare const zenodoAuthenticatedEnv: ZenodoAuthenticatedEnv
 declare const zenodoEnv: ZenodoEnv
@@ -55,6 +57,16 @@ expectTypeOf(depositMetadata.creators).toEqualTypeOf<
 >()
 expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
 expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
+
+//
+// SubmittedDeposition
+//
+
+expectTypeOf(submittedDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(submittedDeposition.metadata).toMatchTypeOf<DepositMetadata>()
+expectTypeOf(submittedDeposition.metadata.doi).toEqualTypeOf<Doi>()
+expectTypeOf(submittedDeposition.state).toEqualTypeOf<'done'>()
+expectTypeOf(submittedDeposition.submitted).toEqualTypeOf<true>()
 
 //
 // UnsubmittedDeposition
@@ -106,6 +118,14 @@ expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
 
 expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+>()
+
+//
+// publishDeposition
+//
+
+expectTypeOf(pipe(unsubmittedDeposition, _.publishDeposition)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition>
 >()
 
 //

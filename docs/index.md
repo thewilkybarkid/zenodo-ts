@@ -29,14 +29,14 @@ Title is "Open Reviewers Africa – A workshop to empower the next generation of
 */
 ```
 
-## Creating a deposition on the sandbox
+## Creating and publishing a deposition on the sandbox
 
 ```ts
 import fetch from 'cross-fetch'
 import * as C from 'fp-ts/Console'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
-import { ZenodoAuthenticatedEnv, createDeposition, uploadFile } from 'zenodo-ts'
+import { ZenodoAuthenticatedEnv, createDeposition, publishDeposition, uploadFile } from 'zenodo-ts'
 
 const env: ZenodoAuthenticatedEnv = {
   fetch,
@@ -59,10 +59,11 @@ void pipe(
       content: 'The characteristic theme of the works of Stone is the bridge between culture and ...',
     }),
   ),
+  RTE.chain(publishDeposition),
   RTE.chainFirstIOK(deposition => C.log(`State is "${deposition.state}"`)),
 )(env)()
 /*
-State is "unsubmitted"
+State is "done"
 */
 ```
 

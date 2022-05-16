@@ -225,11 +225,27 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
     )
     .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas))
 
+export const zenodoSubmittedDeposition = (): fc.Arbitrary<_.SubmittedDeposition> =>
+  fc.record({
+    id: fc.integer(),
+    metadata: fc
+      .tuple(
+        zenodoDepositMetadata(),
+        fc.record({
+          doi: doi(),
+        }),
+      )
+      .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas)),
+    state: fc.constant('done'),
+    submitted: fc.constant(true),
+  })
+
 export const zenodoUnsubmittedDeposition = (): fc.Arbitrary<_.UnsubmittedDeposition> =>
   fc.record({
     id: fc.integer(),
     links: fc.record({
       bucket: url(),
+      publish: url(),
     }),
     metadata: fc
       .tuple(

@@ -148,12 +148,26 @@ export type DepositMetadata = {
 
 /**
  * @category model
+ * @since 0.1.3
+ */
+export type SubmittedDeposition = {
+  id: number
+  metadata: DepositMetadata & {
+    doi: Doi
+  }
+  state: 'done'
+  submitted: true
+}
+
+/**
+ * @category model
  * @since 0.1.2
  */
 export type UnsubmittedDeposition = {
   id: number
   links: {
     bucket: URL
+    publish: URL
   }
   metadata: DepositMetadata & {
     prereserve_doi: {
@@ -256,6 +270,21 @@ export const uploadFile: (upload: {
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
     RTE.map(constVoid),
+  )
+
+/**
+ * @category constructors
+ * @since 0.1.3
+ */
+export const publishDeposition: (
+  deposition: UnsubmittedDeposition,
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition> = deposition =>
+  pipe(
+    F.Request('POST')(deposition.links.publish),
+    RTE.fromReaderK(addAuthorizationHeader),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.ACCEPTED), identity),
+    RTE.chainTaskEitherKW(F.decode(SubmittedDepositionC)),
   )
 
 // -------------------------------------------------------------------------------------
@@ -486,6 +515,29 @@ export const RecordsC: Codec<string, string, Records> = pipe(
 
 /**
  * @category codecs
+ * @since 0.1.3
+ */
+export const SubmittedDepositionC: Codec<string, string, SubmittedDeposition> = pipe(
+  JsonC,
+  C.compose(
+    C.struct({
+      id: C.number,
+      metadata: pipe(
+        DepositMetadataC,
+        C.intersect(
+          C.struct({
+            doi: DoiC,
+          }),
+        ),
+      ),
+      state: C.literal('done'),
+      submitted: C.literal(true),
+    }),
+  ),
+)
+
+/**
+ * @category codecs
  * @since 0.1.2
  */
 export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition> = pipe(
@@ -495,6 +547,7 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
       id: C.number,
       links: C.struct({
         bucket: UrlC,
+        publish: UrlC,
       }),
       metadata: pipe(
         DepositMetadataC,

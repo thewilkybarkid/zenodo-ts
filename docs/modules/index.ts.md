@@ -15,16 +15,19 @@ Added in v0.1.0
 - [codecs](#codecs)
   - [RecordC](#recordc)
   - [RecordsC](#recordsc)
+  - [SubmittedDepositionC](#submitteddepositionc)
   - [UnsubmittedDepositionC](#unsubmitteddepositionc)
 - [constructors](#constructors)
   - [createDeposition](#createdeposition)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
+  - [publishDeposition](#publishdeposition)
   - [uploadFile](#uploadfile)
 - [model](#model)
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
   - [Record (type alias)](#record-type-alias)
   - [Records (type alias)](#records-type-alias)
+  - [SubmittedDeposition (type alias)](#submitteddeposition-type-alias)
   - [UnsubmittedDeposition (type alias)](#unsubmitteddeposition-type-alias)
   - [ZenodoAuthenticatedEnv (interface)](#zenodoauthenticatedenv-interface)
   - [ZenodoEnv (interface)](#zenodoenv-interface)
@@ -52,6 +55,16 @@ export declare const RecordsC: C.Codec<string, string, Records>
 ```
 
 Added in v0.1.1
+
+## SubmittedDepositionC
+
+**Signature**
+
+```ts
+export declare const SubmittedDepositionC: C.Codec<string, string, SubmittedDeposition>
+```
+
+Added in v0.1.3
 
 ## UnsubmittedDepositionC
 
@@ -96,6 +109,18 @@ export declare const getRecords: (query: URLSearchParams) => ReaderTaskEither<Ze
 ```
 
 Added in v0.1.1
+
+## publishDeposition
+
+**Signature**
+
+```ts
+export declare const publishDeposition: (
+  deposition: UnsubmittedDeposition
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition>
+```
+
+Added in v0.1.3
 
 ## uploadFile
 
@@ -256,6 +281,23 @@ export type Records = {
 
 Added in v0.1.1
 
+## SubmittedDeposition (type alias)
+
+**Signature**
+
+```ts
+export type SubmittedDeposition = {
+  id: number
+  metadata: DepositMetadata & {
+    doi: Doi
+  }
+  state: 'done'
+  submitted: true
+}
+```
+
+Added in v0.1.3
+
 ## UnsubmittedDeposition (type alias)
 
 **Signature**
@@ -265,6 +307,7 @@ export type UnsubmittedDeposition = {
   id: number
   links: {
     bucket: URL
+    publish: URL
   }
   metadata: DepositMetadata & {
     prereserve_doi: {
