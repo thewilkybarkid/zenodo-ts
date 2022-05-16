@@ -46,6 +46,7 @@ export type Record = {
     license: {
       id: string
     }
+    keywords?: NonEmptyArray<string>
     related_identifiers?: NonEmptyArray<{
       scheme: string
       identifier: string
@@ -107,6 +108,7 @@ export type DepositMetadata = {
     name: string
   }>
   description: string
+  keywords?: NonEmptyArray<string>
   related_identifiers?: NonEmptyArray<{
     scheme: string
     identifier: string
@@ -476,6 +478,7 @@ const BaseRecordC = C.struct({
     C.intersect(
       C.partial({
         communities: NonEmptyArrayC(C.struct({ id: C.string })),
+        keywords: NonEmptyArrayC(C.string),
         language: C.string,
         related_identifiers: NonEmptyArrayC(
           pipe(
@@ -501,6 +504,7 @@ const DepositMetadataC = pipe(
   C.intersect(
     C.partial({
       communities: NonEmptyArrayC(C.struct({ identifier: C.string })),
+      keywords: NonEmptyArrayC(C.string),
       related_identifiers: NonEmptyArrayC(
         pipe(
           C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),

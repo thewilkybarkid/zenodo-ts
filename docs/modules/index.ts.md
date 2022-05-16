@@ -151,6 +151,7 @@ export type DepositMetadata = {
     name: string
   }>
   description: string
+  keywords?: NonEmptyArray<string>
   related_identifiers?: NonEmptyArray<{
     scheme: string
     identifier: string
@@ -224,6 +225,7 @@ export type Record = {
     license: {
       id: string
     }
+    keywords?: NonEmptyArray<string>
     related_identifiers?: NonEmptyArray<{
       scheme: string
       identifier: string

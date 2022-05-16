@@ -129,6 +129,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 { minLength: 1 },
               )
               .filter(isNonEmpty),
+            keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
             related_identifiers: fc
               .array(
                 fc.record(
@@ -183,6 +184,7 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
               { minLength: 1 },
             )
             .filter(isNonEmpty),
+          keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
           related_identifiers: fc
             .array(
               fc.record(
