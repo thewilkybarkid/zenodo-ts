@@ -4,7 +4,6 @@ import { Response } from 'fetch-fp-ts'
 import { isNonEmpty } from 'fp-ts/Array'
 import { Headers } from 'node-fetch'
 import merge from 'ts-deepmerge'
-import { uploadFile } from '../src'
 import * as _ from '../src'
 
 export * from 'fast-check'

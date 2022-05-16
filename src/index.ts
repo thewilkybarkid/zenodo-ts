@@ -247,7 +247,7 @@ export const uploadFile: (upload: {
   readonly name: string
   readonly type: string
   readonly content: string
-}) => (depositon: UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void> = upload =>
+}) => (deposition: UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void> = upload =>
   flow(
     deposition => `${deposition.links.bucket.toString()}/${upload.name}`,
     F.Request('PUT'),
