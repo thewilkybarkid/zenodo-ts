@@ -340,7 +340,7 @@ describe('zenodo-ts', () => {
     })
 
     describe('uploadFile', () => {
-      test('when the response has a 201 status code', async () => {
+      test('when the response has a 200/201 status code', async () => {
         await fc.assert(
           fc.asyncProperty(
             fc.string(),
@@ -349,7 +349,7 @@ describe('zenodo-ts', () => {
             fc.string(),
             fc.string(),
             fc.response({
-              status: fc.constant(StatusCodes.CREATED),
+              status: fc.constantFrom(StatusCodes.CREATED, StatusCodes.OK),
             }),
             async (zenodoApiKey, deposition, name, type, content, response) => {
               const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
@@ -370,7 +370,7 @@ describe('zenodo-ts', () => {
         )
       })
 
-      test('when the response has a non-201 status code', async () => {
+      test('when the response has a non-200/201 status code', async () => {
         await fc.assert(
           fc.asyncProperty(
             fc.string(),
@@ -379,7 +379,7 @@ describe('zenodo-ts', () => {
             fc.string(),
             fc.string(),
             fc.response({
-              status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+              status: fc.integer().filter(status => status !== StatusCodes.CREATED && status !== StatusCodes.OK),
             }),
             async (zenodoApiKey, deposition, name, type, content, response) => {
               const fetch: Fetch = () => Promise.resolve(response)

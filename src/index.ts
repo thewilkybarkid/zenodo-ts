@@ -268,7 +268,7 @@ export const uploadFile: (upload: {
     F.setBody(upload.content, upload.type),
     RTE.fromReaderK(addAuthorizationHeader),
     RTE.chainW(F.send),
-    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED, StatusCodes.OK), identity),
     RTE.map(constVoid),
   )
 
