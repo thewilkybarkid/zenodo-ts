@@ -144,6 +144,9 @@ Added in v0.1.3
 
 ```ts
 export type DepositMetadata = {
+  communities?: NonEmptyArray<{
+    identifier: string
+  }>
   creators: NonEmptyArray<{
     name: string
   }>

@@ -100,6 +100,9 @@ export type Record = {
  * @since 0.1.2
  */
 export type DepositMetadata = {
+  communities?: NonEmptyArray<{
+    identifier: string
+  }>
   creators: NonEmptyArray<{
     name: string
   }>
@@ -489,6 +492,11 @@ const DepositMetadataC = pipe(
     description: C.string,
     title: C.string,
   }),
+  C.intersect(
+    C.partial({
+      communities: NonEmptyArrayC(C.struct({ identifier: C.string })),
+    }),
+  ),
   C.intersect(UploadTypeC),
 )
 

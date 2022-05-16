@@ -173,6 +173,19 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
         description: fc.string(),
         title: fc.string(),
       }),
+      fc.record(
+        {
+          communities: fc
+            .array(
+              fc.record({
+                identifier: fc.string(),
+              }),
+              { minLength: 1 },
+            )
+            .filter(isNonEmpty),
+        },
+        { withDeletedKeys: true },
+      ),
       fc.oneof(
         fc.record({
           upload_type: fc.constantFrom(
