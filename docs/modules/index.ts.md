@@ -151,6 +151,12 @@ export type DepositMetadata = {
     name: string
   }>
   description: string
+  related_identifiers?: NonEmptyArray<{
+    scheme: string
+    identifier: string
+    relation: string
+    resource_type?: string
+  }>
   title: string
 } & (
   | {

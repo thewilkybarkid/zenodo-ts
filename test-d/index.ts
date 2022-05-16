@@ -56,6 +56,9 @@ expectTypeOf(depositMetadata.creators).toEqualTypeOf<
   }>
 >()
 expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
+expectTypeOf(depositMetadata.related_identifiers).toEqualTypeOf<
+  NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined
+>()
 expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
 
 //

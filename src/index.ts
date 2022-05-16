@@ -107,6 +107,12 @@ export type DepositMetadata = {
     name: string
   }>
   description: string
+  related_identifiers?: NonEmptyArray<{
+    scheme: string
+    identifier: string
+    relation: string
+    resource_type?: string
+  }>
   title: string
 } & (
   | {
@@ -495,6 +501,12 @@ const DepositMetadataC = pipe(
   C.intersect(
     C.partial({
       communities: NonEmptyArrayC(C.struct({ identifier: C.string })),
+      related_identifiers: NonEmptyArrayC(
+        pipe(
+          C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
+          C.intersect(C.partial({ resource_type: C.string })),
+        ),
+      ),
     }),
   ),
   C.intersect(UploadTypeC),
