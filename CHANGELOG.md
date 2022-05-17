@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.3...v0.1.4) (2022-05-17)
+
+
+### Features
+
+* add communities ([9653d86](https://github.com/thewilkybarkid/zenodo-ts/commit/9653d868661716424c5b3eaad6aa928ff677a42f))
+* add keywords to Record and DepositMetadata ([b1c1f72](https://github.com/thewilkybarkid/zenodo-ts/commit/b1c1f720f6d5641c8a93f2a21d7c45a484f522d1))
+* add latest links to Record ([33dce45](https://github.com/thewilkybarkid/zenodo-ts/commit/33dce4569b77ebcac046de9b21e3e72fb4f25be9))
+* add ORCIDs to creators ([a22ab7f](https://github.com/thewilkybarkid/zenodo-ts/commit/a22ab7f748e5925ed30741e3dedef29f0a82a04b))
+* add related identifiers to DepositMetadata ([d8d0e72](https://github.com/thewilkybarkid/zenodo-ts/commit/d8d0e728a1f7d633665a68fb4772c068e15617ec))
+
 ### [0.1.3](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.2...v0.1.3) (2022-05-16)
 
 
