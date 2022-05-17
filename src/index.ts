@@ -33,6 +33,10 @@ export type Record = {
   conceptdoi: Doi
   conceptrecid: number
   id: number
+  links: {
+    latest: URL
+    latest_html: URL
+  }
   metadata: {
     communities?: NonEmptyArray<{
       id: string
@@ -462,6 +466,10 @@ const BaseRecordC = C.struct({
   conceptdoi: DoiC,
   conceptrecid: NumberFromStringC,
   id: C.number,
+  links: C.struct({
+    latest: UrlC,
+    latest_html: UrlC,
+  }),
   metadata: pipe(
     C.struct({
       creators: NonEmptyArrayC(

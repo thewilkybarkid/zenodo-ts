@@ -52,6 +52,10 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
         conceptdoi: doi(),
         conceptrecid: fc.integer(),
         id: fc.integer(),
+        links: fc.record({
+          latest: url(),
+          latest_html: url(),
+        }),
         metadata: fc.record({
           creators: fc
             .array(

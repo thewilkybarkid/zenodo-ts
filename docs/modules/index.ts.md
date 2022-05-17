@@ -213,6 +213,10 @@ export type Record = {
   conceptdoi: Doi
   conceptrecid: number
   id: number
+  links: {
+    latest: URL
+    latest_html: URL
+  }
   metadata: {
     communities?: NonEmptyArray<{
       id: string

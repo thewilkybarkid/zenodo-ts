@@ -33,6 +33,8 @@ declare const zenodoEnv: ZenodoEnv
 //
 
 expectTypeOf(record.id).toEqualTypeOf<number>()
+expectTypeOf(record.links.latest).toEqualTypeOf<URL>()
+expectTypeOf(record.links.latest_html).toEqualTypeOf<URL>()
 expectTypeOf(record.metadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: string }>>()
 expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
