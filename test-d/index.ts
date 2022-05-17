@@ -33,6 +33,7 @@ declare const zenodoEnv: ZenodoEnv
 //
 
 expectTypeOf(record.id).toEqualTypeOf<number>()
+expectTypeOf(record.metadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: string }>>()
 expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
 expectTypeOf(record.metadata.related_identifiers).toEqualTypeOf<
@@ -50,11 +51,7 @@ expectTypeOf(records.hits.hits).toEqualTypeOf<Array<Record>>()
 // DepositMetadata
 //
 
-expectTypeOf(depositMetadata.creators).toEqualTypeOf<
-  NonEmptyArray<{
-    name: string
-  }>
->()
+expectTypeOf(depositMetadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: string }>>()
 expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
 expectTypeOf(depositMetadata.related_identifiers).toEqualTypeOf<
   NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined

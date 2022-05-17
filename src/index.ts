@@ -39,6 +39,7 @@ export type Record = {
     }>
     creators: NonEmptyArray<{
       name: string
+      orcid?: string
     }>
     description: string
     doi: Doi
@@ -106,6 +107,7 @@ export type DepositMetadata = {
   }>
   creators: NonEmptyArray<{
     name: string
+    orcid?: string
   }>
   description: string
   keywords?: NonEmptyArray<string>
@@ -463,9 +465,16 @@ const BaseRecordC = C.struct({
   metadata: pipe(
     C.struct({
       creators: NonEmptyArrayC(
-        C.struct({
-          name: C.string,
-        }),
+        pipe(
+          C.struct({
+            name: C.string,
+          }),
+          C.intersect(
+            C.partial({
+              orcid: C.string,
+            }),
+          ),
+        ),
       ),
       description: C.string,
       doi: DoiC,
@@ -494,9 +503,16 @@ const BaseRecordC = C.struct({
 const DepositMetadataC = pipe(
   C.struct({
     creators: NonEmptyArrayC(
-      C.struct({
-        name: C.string,
-      }),
+      pipe(
+        C.struct({
+          name: C.string,
+        }),
+        C.intersect(
+          C.partial({
+            orcid: C.string,
+          }),
+        ),
+      ),
     ),
     description: C.string,
     title: C.string,
