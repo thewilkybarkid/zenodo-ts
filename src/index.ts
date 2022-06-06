@@ -13,6 +13,7 @@ import { constVoid, flow, identity, pipe } from 'fp-ts/function'
 import { StatusCodes } from 'http-status-codes'
 import * as C from 'io-ts/Codec'
 import * as D from 'io-ts/Decoder'
+import { Orcid, isOrcid } from 'orcid-id-ts'
 import safeStableStringify from 'safe-stable-stringify'
 import { URL } from 'url'
 
@@ -43,7 +44,7 @@ export type Record = {
     }>
     creators: NonEmptyArray<{
       name: string
-      orcid?: string
+      orcid?: Orcid
     }>
     description: string
     doi: Doi
@@ -111,7 +112,7 @@ export type DepositMetadata = {
   }>
   creators: NonEmptyArray<{
     name: string
-    orcid?: string
+    orcid?: Orcid
   }>
   description: string
   keywords?: NonEmptyArray<string>
@@ -310,6 +311,8 @@ export const publishDeposition: (
 
 const DoiC = C.fromDecoder(D.fromRefinement(isDoi, 'DOI'))
 
+const OrcidC = C.fromDecoder(D.fromRefinement(isOrcid, 'ORCID'))
+
 const UrlC = C.make(
   pipe(
     D.string,
@@ -479,7 +482,7 @@ const BaseRecordC = C.struct({
           }),
           C.intersect(
             C.partial({
-              orcid: C.string,
+              orcid: OrcidC,
             }),
           ),
         ),
@@ -517,7 +520,7 @@ const DepositMetadataC = pipe(
         }),
         C.intersect(
           C.partial({
-            orcid: C.string,
+            orcid: OrcidC,
           }),
         ),
       ),

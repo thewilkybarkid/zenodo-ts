@@ -1,8 +1,10 @@
+import { mod11_2 } from 'cdigit'
 import { Doi, isDoi } from 'doi-ts'
 import * as fc from 'fast-check'
 import { Response } from 'fetch-fp-ts'
 import { isNonEmpty } from 'fp-ts/Array'
 import { Headers } from 'node-fetch'
+import { Orcid, isOrcid } from 'orcid-id-ts'
 import merge from 'ts-deepmerge'
 import * as _ from '../src'
 
@@ -23,6 +25,15 @@ export const doi = (): fc.Arbitrary<Doi> =>
     )
     .map(([prefix, suffix]) => `10.${prefix}/${suffix}` as Doi)
     .filter(isDoi)
+
+export const orcid = (): fc.Arbitrary<Orcid> =>
+  fc
+    .stringOf(fc.constantFrom('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'), {
+      minLength: 4 + 4 + 4 + 3,
+      maxLength: 4 + 4 + 4 + 3,
+    })
+    .map(value => mod11_2.generate(value).replace(/.{4}(?=.)/g, '$&-'))
+    .filter(isOrcid)
 
 const headerName = () =>
   fc.stringOf(
@@ -62,7 +73,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
               fc.record(
                 {
                   name: fc.string(),
-                  orcid: fc.string(),
+                  orcid: orcid(),
                 },
                 { requiredKeys: ['name'] },
               ),
@@ -176,7 +187,7 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
             fc.record(
               {
                 name: fc.string(),
-                orcid: fc.string(),
+                orcid: orcid(),
               },
               { requiredKeys: ['name'] },
             ),

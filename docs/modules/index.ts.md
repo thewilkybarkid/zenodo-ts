@@ -149,7 +149,7 @@ export type DepositMetadata = {
   }>
   creators: NonEmptyArray<{
     name: string
-    orcid?: string
+    orcid?: Orcid
   }>
   description: string
   keywords?: NonEmptyArray<string>
@@ -223,7 +223,7 @@ export type Record = {
     }>
     creators: NonEmptyArray<{
       name: string
-      orcid?: string
+      orcid?: Orcid
     }>
     description: string
     doi: Doi

@@ -5,6 +5,7 @@ import { NonEmptyArray } from 'fp-ts/NonEmptyArray'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import * as C from 'io-ts/Codec'
+import { Orcid } from 'orcid-id-ts'
 import * as _ from '../src'
 
 import Codec = C.Codec
@@ -35,7 +36,7 @@ declare const zenodoEnv: ZenodoEnv
 expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.links.latest).toEqualTypeOf<URL>()
 expectTypeOf(record.links.latest_html).toEqualTypeOf<URL>()
-expectTypeOf(record.metadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: string }>>()
+expectTypeOf(record.metadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: Orcid }>>()
 expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
 expectTypeOf(record.metadata.related_identifiers).toEqualTypeOf<
@@ -53,7 +54,7 @@ expectTypeOf(records.hits.hits).toEqualTypeOf<Array<Record>>()
 // DepositMetadata
 //
 
-expectTypeOf(depositMetadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: string }>>()
+expectTypeOf(depositMetadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: Orcid }>>()
 expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
 expectTypeOf(depositMetadata.related_identifiers).toEqualTypeOf<
   NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined
