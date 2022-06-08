@@ -33,6 +33,14 @@ import ReaderTaskEither = RTE.ReaderTaskEither
 export type Record = {
   conceptdoi: Doi
   conceptrecid: number
+  files: NonEmptyArray<{
+    key: string
+    links: {
+      self: URL
+    }
+    size: number
+    type: string
+  }>
   id: number
   links: {
     latest: URL
@@ -469,6 +477,16 @@ const BaseRecordC = C.struct({
   conceptdoi: DoiC,
   conceptrecid: NumberFromStringC,
   id: C.number,
+  files: NonEmptyArrayC(
+    C.struct({
+      key: C.string,
+      links: C.struct({
+        self: UrlC,
+      }),
+      size: C.number,
+      type: C.string,
+    }),
+  ),
   links: C.struct({
     latest: UrlC,
     latest_html: UrlC,

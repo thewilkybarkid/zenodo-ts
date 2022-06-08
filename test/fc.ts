@@ -62,6 +62,19 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
       fc.record({
         conceptdoi: doi(),
         conceptrecid: fc.integer(),
+        files: fc
+          .array(
+            fc.record({
+              key: fc.string(),
+              links: fc.record({
+                self: url(),
+              }),
+              size: fc.integer(),
+              type: fc.string(),
+            }),
+            { minLength: 1 },
+          )
+          .filter(isNonEmpty),
         id: fc.integer(),
         links: fc.record({
           latest: url(),

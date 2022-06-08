@@ -212,6 +212,14 @@ Added in v0.1.2
 export type Record = {
   conceptdoi: Doi
   conceptrecid: number
+  files: NonEmptyArray<{
+    key: string
+    links: {
+      self: URL
+    }
+    size: number
+    type: string
+  }>
   id: number
   links: {
     latest: URL
