@@ -7,6 +7,7 @@ import { isNonEmpty } from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as J from 'fp-ts/Json'
 import * as NEA from 'fp-ts/NonEmptyArray'
+import * as O from 'fp-ts/Option'
 import * as R from 'fp-ts/Reader'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { constVoid, flow, identity, pipe } from 'fp-ts/function'
@@ -61,6 +62,7 @@ export type Record = {
       id: string
     }
     keywords?: NonEmptyArray<string>
+    publication_date: Date
     related_identifiers?: NonEmptyArray<{
       scheme: string
       identifier: string
@@ -359,6 +361,26 @@ const NumberFromStringC = C.make(
   { encode: String },
 )
 
+const PlainDateC = C.make(
+  pipe(
+    D.string,
+    D.parse(
+      E.fromPredicate(
+        s => /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(s),
+        s => D.error(s, 'Plain Date'),
+      ),
+    ),
+    D.parse(s =>
+      pipe(
+        O.tryCatch(() => new Date(s)),
+        O.filter(d => !isNaN(d.getTime())),
+        E.fromOption(() => D.error(s, 'Plain Date')),
+      ),
+    ),
+  ),
+  { encode: date => date.toISOString().split('T')[0] },
+)
+
 const ResourceTypeC = C.sum('type')({
   dataset: C.struct({
     type: C.literal('dataset'),
@@ -510,6 +532,7 @@ const BaseRecordC = C.struct({
       license: C.struct({
         id: C.string,
       }),
+      publication_date: PlainDateC,
       resource_type: ResourceTypeC,
       title: C.string,
     }),

@@ -240,6 +240,7 @@ export type Record = {
       id: string
     }
     keywords?: NonEmptyArray<string>
+    publication_date: Date
     related_identifiers?: NonEmptyArray<{
       scheme: string
       identifier: string
