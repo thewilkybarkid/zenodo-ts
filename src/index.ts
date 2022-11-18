@@ -211,6 +211,7 @@ export type UnsubmittedDeposition = {
  * @since 0.1.1
  */
 export interface ZenodoEnv extends FetchEnv {
+  zenodoApiKey?: string
   zenodoUrl?: URL
 }
 
@@ -243,7 +244,8 @@ export type Records = {
 export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Record> = id =>
   pipe(
     RTE.fromReader(zenodoUrl(`records/${id.toString()}`)),
-    RTE.chainW(flow(F.Request('GET'), F.send)),
+    RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
+    RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordC)),
   )
@@ -255,7 +257,8 @@ export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Rec
 export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, unknown, Records> = query =>
   pipe(
     RTE.fromReader(zenodoUrl(`records/?${query.toString()}`)),
-    RTE.chainW(flow(F.Request('GET'), F.send)),
+    RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
+    RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordsC)),
   )
@@ -665,6 +668,6 @@ const zenodoUrl = (path: string) =>
   R.asks(({ zenodoUrl }: ZenodoEnv) => new URL(`/api/${path}`, zenodoUrl ?? 'https://zenodo.org/'))
 
 const addAuthorizationHeader = (request: F.Request) =>
-  R.asks(({ zenodoApiKey }: ZenodoAuthenticatedEnv) =>
-    pipe(request, F.setHeader('Authorization', `Bearer ${zenodoApiKey}`)),
+  R.asks(({ zenodoApiKey }: ZenodoEnv) =>
+    pipe(request, typeof zenodoApiKey === 'string' ? F.setHeader('Authorization', `Bearer ${zenodoApiKey}`) : identity),
   )

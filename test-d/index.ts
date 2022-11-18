@@ -91,6 +91,7 @@ expectTypeOf(unsubmittedDeposition.submitted).toEqualTypeOf<false>()
 
 expectTypeOf(zenodoEnv).toMatchTypeOf<FetchEnv>()
 expectTypeOf(zenodoEnv.zenodoUrl).toEqualTypeOf<URL | undefined>()
+expectTypeOf(zenodoEnv.zenodoApiKey).toEqualTypeOf<string | undefined>()
 
 //
 // ZenodoAuthenticatedEnv

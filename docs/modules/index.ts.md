@@ -365,6 +365,7 @@ Added in v0.1.2
 
 ```ts
 export interface ZenodoEnv extends FetchEnv {
+  zenodoApiKey?: string
   zenodoUrl?: URL
 }
 ```

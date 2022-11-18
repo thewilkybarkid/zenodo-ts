@@ -39,6 +39,25 @@ describe('zenodo-ts', () => {
         )
       })
 
+      test('with a Zenodo API key', async () => {
+        await fc.assert(
+          fc.asyncProperty(fc.string(), fc.integer(), fc.response(), async (zenodoApiKey, id, response) => {
+            const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+            await _.getRecord(id)({ fetch, zenodoApiKey })()
+
+            expect(fetch).toHaveBeenCalledWith(
+              expect.anything(),
+              expect.objectContaining({
+                headers: expect.objectContaining({
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                }),
+              }),
+            )
+          }),
+        )
+      })
+
       test('when the record can be decoded', async () => {
         await fc.assert(
           fc.asyncProperty(
@@ -134,6 +153,25 @@ describe('zenodo-ts', () => {
               headers: {},
               method: 'GET',
             })
+          }),
+        )
+      })
+
+      test('with a Zenodo API key', async () => {
+        await fc.assert(
+          fc.asyncProperty(fc.string(), fc.urlSearchParams(), fc.response(), async (zenodoApiKey, query, response) => {
+            const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+            await _.getRecords(query)({ fetch, zenodoApiKey })()
+
+            expect(fetch).toHaveBeenCalledWith(
+              expect.anything(),
+              expect.objectContaining({
+                headers: expect.objectContaining({
+                  Authorization: `Bearer ${zenodoApiKey}`,
+                }),
+              }),
+            )
           }),
         )
       })
