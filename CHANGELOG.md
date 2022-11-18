@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.6...v0.1.7) (2022-11-18)
+
+
+### Features
+
+* allow all requests to be authenticated ([0d961d7](https://github.com/thewilkybarkid/zenodo-ts/commit/0d961d7295f51b56908bf827b43e8a3a02d33fec))
+
 ### [0.1.6](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.5...v0.1.6) (2022-07-05)
 
 
