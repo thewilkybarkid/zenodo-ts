@@ -98,6 +98,7 @@ export type Record = {
             | 'milestone'
             | 'other'
             | 'patent'
+            | 'peerreview'
             | 'preprint'
             | 'proposal'
             | 'report'
@@ -162,6 +163,7 @@ export type DepositMetadata = {
         | 'milestone'
         | 'other'
         | 'patent'
+        | 'peerreview'
         | 'preprint'
         | 'proposal'
         | 'report'
@@ -419,6 +421,7 @@ const ResourceTypeC = C.sum('type')({
       'datamanagementplan',
       'article',
       'patent',
+      'peerreview',
       'preprint',
       'deliverable',
       'milestone',
@@ -476,6 +479,7 @@ const UploadTypeC = C.sum('upload_type')({
       'datamanagementplan',
       'article',
       'patent',
+      'peerreview',
       'preprint',
       'deliverable',
       'milestone',
