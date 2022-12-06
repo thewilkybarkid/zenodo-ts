@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.7...v0.1.8) (2022-12-06)
+
+
+### Bug Fixes
+
+* add peer review as a publication type ([28cc200](https://github.com/thewilkybarkid/zenodo-ts/commit/28cc200a534c2d739cd0a51c5e1b5b59a07df383))
+
 ### [0.1.7](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.6...v0.1.7) (2022-11-18)
 
 
