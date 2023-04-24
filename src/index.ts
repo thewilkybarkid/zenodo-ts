@@ -232,6 +232,7 @@ export interface ZenodoAuthenticatedEnv extends ZenodoEnv {
 export type Records = {
   hits: {
     hits: Array<Record>
+    total: number
   }
 }
 
@@ -607,6 +608,7 @@ export const RecordsC: Codec<string, string, Records> = pipe(
     C.struct({
       hits: C.struct({
         hits: C.array(BaseRecordC),
+        total: C.number,
       }),
     }),
   ),

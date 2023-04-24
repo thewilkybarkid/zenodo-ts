@@ -192,6 +192,7 @@ export const zenodoRecords = (): fc.Arbitrary<_.Records> =>
   fc.record({
     hits: fc.record({
       hits: fc.array(zenodoRecord()),
+      total: fc.integer({ min: 0 }),
     }),
   })
 

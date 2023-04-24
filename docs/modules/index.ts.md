@@ -303,6 +303,7 @@ Added in v0.1.0
 export type Records = {
   hits: {
     hits: Array<Record>
+    total: number
   }
 }
 ```

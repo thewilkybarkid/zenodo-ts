@@ -53,6 +53,7 @@ expectTypeOf(record.metadata.title).toEqualTypeOf<string>()
 //
 
 expectTypeOf(records.hits.hits).toEqualTypeOf<Array<Record>>()
+expectTypeOf(records.hits.total).toEqualTypeOf<number>()
 
 //
 // DepositMetadata
