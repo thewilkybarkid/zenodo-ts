@@ -1,4 +1,5 @@
 module.exports = {
+  injectGlobals: false,
   testEnvironment: 'node',
   roots: ['./src/', './test/'],
   moduleFileExtensions: ['ts', 'js'],

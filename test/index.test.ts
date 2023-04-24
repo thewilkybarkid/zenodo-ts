@@ -1,3 +1,4 @@
+import { describe, expect, jest, test } from '@jest/globals'
 import { Fetch } from 'fetch-fp-ts'
 import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
@@ -90,7 +91,7 @@ describe('constructors', () => {
 
             const actual = await _.getRecord(id)({ fetch })()
 
-            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
           },
         ),
       )
@@ -208,7 +209,7 @@ describe('constructors', () => {
 
             const actual = await _.getRecords(query)({ fetch })()
 
-            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
           },
         ),
       )
@@ -332,7 +333,7 @@ describe('constructors', () => {
 
             const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
 
-            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
           },
         ),
       )
@@ -491,7 +492,7 @@ describe('constructors', () => {
 
             const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
 
-            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+            expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
           },
         ),
       )
@@ -553,7 +554,7 @@ describe('codecs', () => {
         fc.property(fc.string(), string => {
           const actual = _.RecordC.decode(string)
 
-          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
         }),
       )
     })
@@ -575,7 +576,7 @@ describe('codecs', () => {
         fc.property(fc.string(), string => {
           const actual = _.RecordsC.decode(string)
 
-          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
         }),
       )
     })
@@ -597,7 +598,7 @@ describe('codecs', () => {
         fc.property(fc.string(), string => {
           const actual = _.SubmittedDepositionC.decode(string)
 
-          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
         }),
       )
     })
@@ -619,7 +620,7 @@ describe('codecs', () => {
         fc.property(fc.string(), string => {
           const actual = _.UnsubmittedDepositionC.decode(string)
 
-          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything()))
+          expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
         }),
       )
     })
