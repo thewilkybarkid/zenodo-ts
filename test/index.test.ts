@@ -100,334 +100,334 @@ describe('constructors', () => {
 
       expect(actual).toStrictEqual(E.left(error))
     })
+  })
 
-    describe('getRecords', () => {
-      test.prop([fc.url(), fc.urlSearchParams(), fc.response()])(
-        'with a Zenodo URL',
-        async (zenodoUrl, query, response) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
-
-          await _.getRecords(query)({ fetch, zenodoUrl })()
-
-          expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/?${query.toString()}`, {
-            headers: {},
-            method: 'GET',
-          })
-        },
-      )
-
-      test.prop([fc.urlSearchParams(), fc.response()])('without a Zenodo URL', async (query, response) => {
+  describe('getRecords', () => {
+    test.prop([fc.url(), fc.urlSearchParams(), fc.response()])(
+      'with a Zenodo URL',
+      async (zenodoUrl, query, response) => {
         const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-        await _.getRecords(query)({ fetch })()
+        await _.getRecords(query)({ fetch, zenodoUrl })()
 
-        expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/?${query.toString()}`, {
+        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/?${query.toString()}`, {
           headers: {},
           method: 'GET',
         })
+      },
+    )
+
+    test.prop([fc.urlSearchParams(), fc.response()])('without a Zenodo URL', async (query, response) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+      await _.getRecords(query)({ fetch })()
+
+      expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/?${query.toString()}`, {
+        headers: {},
+        method: 'GET',
       })
+    })
 
-      test.prop([fc.string(), fc.urlSearchParams(), fc.response()])(
-        'with a Zenodo API key',
-        async (zenodoApiKey, query, response) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+    test.prop([fc.string(), fc.urlSearchParams(), fc.response()])(
+      'with a Zenodo API key',
+      async (zenodoApiKey, query, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-          await _.getRecords(query)({ fetch, zenodoApiKey })()
+        await _.getRecords(query)({ fetch, zenodoApiKey })()
 
-          expect(fetch).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({
-              headers: expect.objectContaining({
-                Authorization: `Bearer ${zenodoApiKey}`,
-              }),
+        expect(fetch).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            headers: expect.objectContaining({
+              Authorization: `Bearer ${zenodoApiKey}`,
             }),
-          )
-        },
-      )
+          }),
+        )
+      },
+    )
 
-      test.prop([
-        fc.urlSearchParams(),
-        fc
-          .zenodoRecords()
-          .chain(records =>
-            fc.tuple(
-              fc.constant(records),
-              fc.response({ status: fc.constant(StatusCodes.OK), text: fc.constant(_.RecordsC.encode(records)) }),
-            ),
+    test.prop([
+      fc.urlSearchParams(),
+      fc
+        .zenodoRecords()
+        .chain(records =>
+          fc.tuple(
+            fc.constant(records),
+            fc.response({ status: fc.constant(StatusCodes.OK), text: fc.constant(_.RecordsC.encode(records)) }),
           ),
-      ])('when the records can be decoded', async (query, [records, response]) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+        ),
+    ])('when the records can be decoded', async (query, [records, response]) => {
+      const fetch: Fetch = () => Promise.resolve(response)
 
-        const actual = await _.getRecords(query)({ fetch })()
+      const actual = await _.getRecords(query)({ fetch })()
 
-        expect(actual).toStrictEqual(D.success(records))
-      })
+      expect(actual).toStrictEqual(D.success(records))
+    })
 
-      test.prop([
-        fc.urlSearchParams(),
-        fc.response({
-          status: fc.constant(StatusCodes.OK),
-          text: fc.string(),
-        }),
-      ])('when the records cannot be decoded', async (query, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+    test.prop([
+      fc.urlSearchParams(),
+      fc.response({
+        status: fc.constant(StatusCodes.OK),
+        text: fc.string(),
+      }),
+    ])('when the records cannot be decoded', async (query, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
 
-        const actual = await _.getRecords(query)({ fetch })()
+      const actual = await _.getRecords(query)({ fetch })()
 
-        expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
-      })
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
 
-      test.prop([
-        fc.urlSearchParams(),
-        fc.response({ status: fc.integer().filter(status => status !== StatusCodes.OK) }),
-      ])('when the response has a non-200 status code', async (query, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+    test.prop([
+      fc.urlSearchParams(),
+      fc.response({ status: fc.integer().filter(status => status !== StatusCodes.OK) }),
+    ])('when the response has a non-200 status code', async (query, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
 
-        const actual = await _.getRecords(query)({ fetch })()
+      const actual = await _.getRecords(query)({ fetch })()
 
-        expect(actual).toStrictEqual(E.left(response))
-      })
+      expect(actual).toStrictEqual(E.left(response))
+    })
 
-      test.prop([fc.urlSearchParams(), fc.error()])('when fetch throws an error', async (query, error) => {
+    test.prop([fc.urlSearchParams(), fc.error()])('when fetch throws an error', async (query, error) => {
+      const fetch: Fetch = () => Promise.reject(error)
+
+      const actual = await _.getRecords(query)({ fetch })()
+
+      expect(actual).toStrictEqual(E.left(error))
+    })
+  })
+
+  describe('createDeposition', () => {
+    test.prop([fc.url(), fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
+      'with a Zenodo URL',
+      async (zenodoUrl, zenodoApiKey, metadata, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.createDeposition(metadata)({ fetch, zenodoApiKey, zenodoUrl })()
+
+        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
+          body: expect.anything(),
+          headers: {
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        })
+      },
+    )
+
+    test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
+      'without a Zenodo URL',
+      async (zenodoApiKey, metadata, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+        expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
+          body: expect.anything(),
+          headers: {
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        })
+      },
+    )
+
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.zenodoUnsubmittedDeposition().chain(deposition =>
+        fc.tuple(
+          fc.constant(deposition),
+          fc.response({
+            status: fc.constant(StatusCodes.CREATED),
+            text: fc.constant(_.UnsubmittedDepositionC.encode(deposition)),
+          }),
+        ),
+      ),
+    ])('when the deposition can be decoded', async (zenodoApiKey, metadata, [deposition, response]) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.success(deposition))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.response({
+        status: fc.constant(StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, metadata, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the response has a non-201 status code', async (zenodoApiKey, metadata, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, metadata, error) => {
         const fetch: Fetch = () => Promise.reject(error)
 
-        const actual = await _.getRecords(query)({ fetch })()
+        const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
 
         expect(actual).toStrictEqual(E.left(error))
-      })
-    })
+      },
+    )
+  })
 
-    describe('createDeposition', () => {
-      test.prop([fc.url(), fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
-        'with a Zenodo URL',
-        async (zenodoUrl, zenodoApiKey, metadata, response) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+  describe('uploadFile', () => {
+    test.prop([
+      fc.string(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.string(),
+      fc.string(),
+      fc.string(),
+      fc.response({
+        status: fc.constantFrom(StatusCodes.CREATED, StatusCodes.OK),
+      }),
+    ])(
+      'when the response has a 200/201 status code',
+      async (zenodoApiKey, deposition, name, type, content, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-          await _.createDeposition(metadata)({ fetch, zenodoApiKey, zenodoUrl })()
+        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
 
-          expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
-            body: expect.anything(),
-            headers: {
-              Authorization: `Bearer ${zenodoApiKey}`,
-              'Content-Type': 'application/json',
-            },
-            method: 'POST',
-          })
-        },
-      )
+        expect(actual).toStrictEqual(D.success(undefined))
+        expect(fetch).toHaveBeenCalledWith(`${deposition.links.bucket.href}/${name}`, {
+          body: content,
+          headers: {
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': type,
+          },
+          method: 'PUT',
+        })
+      },
+    )
 
-      test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
-        'without a Zenodo URL',
-        async (zenodoApiKey, metadata, response) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
-
-          await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
-
-          expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
-            body: expect.anything(),
-            headers: {
-              Authorization: `Bearer ${zenodoApiKey}`,
-              'Content-Type': 'application/json',
-            },
-            method: 'POST',
-          })
-        },
-      )
-
-      test.prop([
-        fc.string(),
-        fc.zenodoDepositMetadata(),
-        fc.zenodoUnsubmittedDeposition().chain(deposition =>
-          fc.tuple(
-            fc.constant(deposition),
-            fc.response({
-              status: fc.constant(StatusCodes.CREATED),
-              text: fc.constant(_.UnsubmittedDepositionC.encode(deposition)),
-            }),
-          ),
-        ),
-      ])('when the deposition can be decoded', async (zenodoApiKey, metadata, [deposition, response]) => {
+    test.prop([
+      fc.string(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.string(),
+      fc.string(),
+      fc.string(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.CREATED && status !== StatusCodes.OK),
+      }),
+    ])(
+      'when the response has a non-200/201 status code',
+      async (zenodoApiKey, deposition, name, type, content, response) => {
         const fetch: Fetch = () => Promise.resolve(response)
 
-        const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
-
-        expect(actual).toStrictEqual(D.success(deposition))
-      })
-
-      test.prop([
-        fc.string(),
-        fc.zenodoDepositMetadata(),
-        fc.response({
-          status: fc.constant(StatusCodes.CREATED),
-          text: fc.string(),
-        }),
-      ])('when the deposition cannot be decoded', async (zenodoApiKey, metadata, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
-
-        const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
-
-        expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
-      })
-
-      test.prop([
-        fc.string(),
-        fc.zenodoDepositMetadata(),
-        fc.response({
-          status: fc.integer().filter(status => status !== StatusCodes.CREATED),
-          text: fc.string(),
-        }),
-      ])('when the response has a non-201 status code', async (zenodoApiKey, metadata, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
-
-        const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
 
         expect(actual).toStrictEqual(E.left(response))
-      })
+      },
+    )
 
-      test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.error()])(
-        'when fetch throws an error',
-        async (zenodoApiKey, metadata, error) => {
-          const fetch: Fetch = () => Promise.reject(error)
+    test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.string(), fc.string(), fc.string(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, deposition, name, type, content, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
 
-          const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
+        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
 
-          expect(actual).toStrictEqual(E.left(error))
-        },
-      )
-    })
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
+  })
 
-    describe('uploadFile', () => {
-      test.prop([
-        fc.string(),
-        fc.zenodoUnsubmittedDeposition(),
-        fc.string(),
-        fc.string(),
-        fc.string(),
-        fc.response({
-          status: fc.constantFrom(StatusCodes.CREATED, StatusCodes.OK),
-        }),
-      ])(
-        'when the response has a 200/201 status code',
-        async (zenodoApiKey, deposition, name, type, content, response) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
-
-          const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
-
-          expect(actual).toStrictEqual(D.success(undefined))
-          expect(fetch).toHaveBeenCalledWith(`${deposition.links.bucket.href}/${name}`, {
-            body: content,
-            headers: {
-              Authorization: `Bearer ${zenodoApiKey}`,
-              'Content-Type': type,
-            },
-            method: 'PUT',
-          })
-        },
-      )
-
-      test.prop([
-        fc.string(),
-        fc.zenodoUnsubmittedDeposition(),
-        fc.string(),
-        fc.string(),
-        fc.string(),
-        fc.response({
-          status: fc.integer().filter(status => status !== StatusCodes.CREATED && status !== StatusCodes.OK),
-        }),
-      ])(
-        'when the response has a non-200/201 status code',
-        async (zenodoApiKey, deposition, name, type, content, response) => {
-          const fetch: Fetch = () => Promise.resolve(response)
-
-          const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
-
-          expect(actual).toStrictEqual(E.left(response))
-        },
-      )
-
-      test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.string(), fc.string(), fc.string(), fc.error()])(
-        'when fetch throws an error',
-        async (zenodoApiKey, deposition, name, type, content, error) => {
-          const fetch: Fetch = () => Promise.reject(error)
-
-          const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
-
-          expect(actual).toStrictEqual(E.left(error))
-        },
-      )
-    })
-
-    describe('publishDeposition', () => {
-      test.prop([
-        fc.string(),
-        fc.zenodoUnsubmittedDeposition(),
-        fc.zenodoSubmittedDeposition().chain(submittedDeposition =>
-          fc.tuple(
-            fc.constant(submittedDeposition),
-            fc.response({
-              status: fc.constant(StatusCodes.ACCEPTED),
-              text: fc.constant(_.SubmittedDepositionC.encode(submittedDeposition)),
-            }),
-          ),
+  describe('publishDeposition', () => {
+    test.prop([
+      fc.string(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.zenodoSubmittedDeposition().chain(submittedDeposition =>
+        fc.tuple(
+          fc.constant(submittedDeposition),
+          fc.response({
+            status: fc.constant(StatusCodes.ACCEPTED),
+            text: fc.constant(_.SubmittedDepositionC.encode(submittedDeposition)),
+          }),
         ),
-      ])(
-        'when the deposition can be decoded',
-        async (zenodoApiKey, unsubmittedDeposition, [submittedDeposition, response]) => {
-          const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
-
-          const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
-
-          expect(actual).toStrictEqual(D.success(submittedDeposition))
-          expect(fetch).toHaveBeenCalledWith(unsubmittedDeposition.links.publish.href, {
-            headers: {
-              Authorization: `Bearer ${zenodoApiKey}`,
-            },
-            method: 'POST',
-          })
-        },
-      )
-
-      test.prop([
-        fc.string(),
-        fc.zenodoUnsubmittedDeposition(),
-        fc.response({
-          status: fc.constant(StatusCodes.ACCEPTED),
-          text: fc.string(),
-        }),
-      ])('when the deposition cannot be decoded', async (zenodoApiKey, unsubmittedDeposition, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+      ),
+    ])(
+      'when the deposition can be decoded',
+      async (zenodoApiKey, unsubmittedDeposition, [submittedDeposition, response]) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
         const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
-      })
+        expect(actual).toStrictEqual(D.success(submittedDeposition))
+        expect(fetch).toHaveBeenCalledWith(unsubmittedDeposition.links.publish.href, {
+          headers: {
+            Authorization: `Bearer ${zenodoApiKey}`,
+          },
+          method: 'POST',
+        })
+      },
+    )
 
-      test.prop([
-        fc.string(),
-        fc.zenodoUnsubmittedDeposition(),
-        fc.response({
-          status: fc.integer().filter(status => status !== StatusCodes.ACCEPTED),
-          text: fc.string(),
-        }),
-      ])('when the response has a non-202 status code', async (zenodoApiKey, unsubmittedDeposition, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+    test.prop([
+      fc.string(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.response({
+        status: fc.constant(StatusCodes.ACCEPTED),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, unsubmittedDeposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.ACCEPTED),
+        text: fc.string(),
+      }),
+    ])('when the response has a non-202 status code', async (zenodoApiKey, unsubmittedDeposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, unsubmittedDeposition, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
 
         const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(E.left(response))
-      })
-
-      test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.error()])(
-        'when fetch throws an error',
-        async (zenodoApiKey, unsubmittedDeposition, error) => {
-          const fetch: Fetch = () => Promise.reject(error)
-
-          const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
-
-          expect(actual).toStrictEqual(E.left(error))
-        },
-      )
-    })
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
   })
 })
 
