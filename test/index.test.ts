@@ -297,6 +297,80 @@ describe('constructors', () => {
     )
   })
 
+  describe('updateDeposition', () => {
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.zenodoUnsubmittedDeposition().chain(unsubmittedDeposition =>
+        fc.tuple(
+          fc.constant(unsubmittedDeposition),
+          fc.response({
+            status: fc.constant(StatusCodes.OK),
+            text: fc.constant(_.UnsubmittedDepositionC.encode(unsubmittedDeposition)),
+          }),
+        ),
+      ),
+    ])('when the deposition can be decoded', async (zenodoApiKey, metadata, deposition, [expected, response]) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+      const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.success(expected))
+      expect(fetch).toHaveBeenCalledWith(deposition.links.self.href, {
+        body: expect.anything(),
+        headers: {
+          Authorization: `Bearer ${zenodoApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      })
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.response({
+        status: fc.constant(StatusCodes.OK),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, metadata, deposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.zenodoUnsubmittedDeposition(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.OK),
+        text: fc.string(),
+      }),
+    ])('when the response has a non-200 status code', async (zenodoApiKey, metadata, deposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.zenodoUnsubmittedDeposition(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, metadata, deposition, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
+
+        const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
+  })
+
   describe('uploadFile', () => {
     test.prop([
       fc.string(),

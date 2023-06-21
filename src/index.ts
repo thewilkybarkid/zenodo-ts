@@ -198,6 +198,7 @@ export type UnsubmittedDeposition = {
   links: {
     bucket: URL
     publish: URL
+    self: URL
   }
   metadata: DepositMetadata & {
     prereserve_doi: {
@@ -284,6 +285,23 @@ export const createDeposition: (
     ),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
+  )
+
+/**
+ * @category constructors
+ * @since 0.1.10
+ */
+export const updateDeposition: (
+  metadata: DepositMetadata,
+  deposition: UnsubmittedDeposition,
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = (metadata, deposition) =>
+  pipe(
+    F.Request('PUT')(deposition.links.self),
+    F.setBody(JSON.stringify({ metadata: DepositMetadataC.encode(metadata) }), 'application/json'),
+    RTE.fromReaderK(addAuthorizationHeader),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
   )
 
@@ -649,6 +667,7 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
       links: C.struct({
         bucket: UrlC,
         publish: UrlC,
+        self: UrlC,
       }),
       metadata: pipe(
         DepositMetadataC,

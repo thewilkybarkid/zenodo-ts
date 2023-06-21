@@ -22,6 +22,7 @@ Added in v0.1.0
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
   - [publishDeposition](#publishdeposition)
+  - [updateDeposition](#updatedeposition)
   - [uploadFile](#uploadfile)
 - [model](#model)
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
@@ -121,6 +122,19 @@ export declare const publishDeposition: (
 ```
 
 Added in v0.1.3
+
+## updateDeposition
+
+**Signature**
+
+```ts
+export declare const updateDeposition: (
+  metadata: DepositMetadata,
+  deposition: UnsubmittedDeposition
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+```
+
+Added in v0.1.10
 
 ## uploadFile
 
@@ -337,6 +351,7 @@ export type UnsubmittedDeposition = {
   links: {
     bucket: URL
     publish: URL
+    self: URL
   }
   metadata: DepositMetadata & {
     prereserve_doi: {

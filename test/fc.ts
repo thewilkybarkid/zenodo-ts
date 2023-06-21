@@ -317,6 +317,7 @@ export const zenodoUnsubmittedDeposition = (): fc.Arbitrary<_.UnsubmittedDeposit
     links: fc.record({
       bucket: url(),
       publish: url(),
+      self: url(),
     }),
     metadata: fc
       .tuple(

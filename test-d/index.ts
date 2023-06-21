@@ -81,6 +81,9 @@ expectTypeOf(submittedDeposition.submitted).toEqualTypeOf<true>()
 //
 
 expectTypeOf(unsubmittedDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(unsubmittedDeposition.links.bucket).toEqualTypeOf<URL>()
+expectTypeOf(unsubmittedDeposition.links.publish).toEqualTypeOf<URL>()
+expectTypeOf(unsubmittedDeposition.links.self).toEqualTypeOf<URL>()
 expectTypeOf(unsubmittedDeposition.metadata).toMatchTypeOf<DepositMetadata>()
 expectTypeOf(unsubmittedDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
 expectTypeOf(unsubmittedDeposition.state).toEqualTypeOf<'unsubmitted'>()
@@ -118,6 +121,14 @@ expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unkn
 //
 
 expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+>()
+
+//
+// updateDeposition
+//
+
+expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
 >()
 
