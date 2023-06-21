@@ -297,11 +297,101 @@ describe('constructors', () => {
     )
   })
 
+  describe('createEmptyDeposition', () => {
+    test.prop([fc.url(), fc.string(), fc.response()])(
+      'with a Zenodo URL',
+      async (zenodoUrl, zenodoApiKey, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.createEmptyDeposition()({ fetch, zenodoApiKey, zenodoUrl })()
+
+        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
+          body: '{}',
+          headers: {
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        })
+      },
+    )
+
+    test.prop([fc.string(), fc.response()])('without a Zenodo URL', async (zenodoApiKey, response) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+      await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
+
+      expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
+        body: '{}',
+        headers: {
+          Authorization: `Bearer ${zenodoApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoEmptyDeposition().chain(deposition =>
+        fc.tuple(
+          fc.constant(deposition),
+          fc.response({
+            status: fc.constant(StatusCodes.CREATED),
+            text: fc.constant(_.EmptyDepositionC.encode(deposition)),
+          }),
+        ),
+      ),
+    ])('when the deposition can be decoded', async (zenodoApiKey, [deposition, response]) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.success(deposition))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.response({
+        status: fc.constant(StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the response has a non-201 status code', async (zenodoApiKey, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.error()])('when fetch throws an error', async (zenodoApiKey, error) => {
+      const fetch: Fetch = () => Promise.reject(error)
+
+      const actual = await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(error))
+    })
+  })
+
   describe('updateDeposition', () => {
     test.prop([
       fc.string(),
       fc.zenodoDepositMetadata(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.zenodoUnsubmittedDeposition().chain(unsubmittedDeposition =>
         fc.tuple(
           fc.constant(unsubmittedDeposition),
@@ -330,7 +420,7 @@ describe('constructors', () => {
     test.prop([
       fc.string(),
       fc.zenodoDepositMetadata(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.response({
         status: fc.constant(StatusCodes.OK),
         text: fc.string(),
@@ -346,7 +436,7 @@ describe('constructors', () => {
     test.prop([
       fc.string(),
       fc.zenodoDepositMetadata(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.response({
         status: fc.integer().filter(status => status !== StatusCodes.OK),
         text: fc.string(),
@@ -359,16 +449,18 @@ describe('constructors', () => {
       expect(actual).toStrictEqual(E.left(response))
     })
 
-    test.prop([fc.string(), fc.zenodoDepositMetadata(), fc.zenodoUnsubmittedDeposition(), fc.error()])(
-      'when fetch throws an error',
-      async (zenodoApiKey, metadata, deposition, error) => {
-        const fetch: Fetch = () => Promise.reject(error)
+    test.prop([
+      fc.string(),
+      fc.zenodoDepositMetadata(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
+      fc.error(),
+    ])('when fetch throws an error', async (zenodoApiKey, metadata, deposition, error) => {
+      const fetch: Fetch = () => Promise.reject(error)
 
-        const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+      const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(E.left(error))
-      },
-    )
+      expect(actual).toStrictEqual(E.left(error))
+    })
   })
 
   describe('uploadFile', () => {
@@ -529,6 +621,20 @@ describe('codecs', () => {
 
     test.prop([fc.string()])('when the records cannot be decoded', string => {
       const actual = _.RecordsC.decode(string)
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+  })
+
+  describe('EmptyDepositionC', () => {
+    test.prop([fc.zenodoEmptyDeposition()])('when the empty deposition can be decoded', emptyDeposition => {
+      const actual = pipe(emptyDeposition, _.EmptyDepositionC.encode, _.EmptyDepositionC.decode)
+
+      expect(actual).toStrictEqual(D.success(emptyDeposition))
+    })
+
+    test.prop([fc.string()])('when the empty deposition cannot be decoded', string => {
+      const actual = _.EmptyDepositionC.decode(string)
 
       expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
     })

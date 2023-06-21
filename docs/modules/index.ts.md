@@ -13,12 +13,14 @@ Added in v0.1.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [codecs](#codecs)
+  - [EmptyDepositionC](#emptydepositionc)
   - [RecordC](#recordc)
   - [RecordsC](#recordsc)
   - [SubmittedDepositionC](#submitteddepositionc)
   - [UnsubmittedDepositionC](#unsubmitteddepositionc)
 - [constructors](#constructors)
   - [createDeposition](#createdeposition)
+  - [createEmptyDeposition](#createemptydeposition)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
   - [publishDeposition](#publishdeposition)
@@ -26,6 +28,7 @@ Added in v0.1.0
   - [uploadFile](#uploadfile)
 - [model](#model)
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
+  - [EmptyDeposition (type alias)](#emptydeposition-type-alias)
   - [Record (type alias)](#record-type-alias)
   - [Records (type alias)](#records-type-alias)
   - [SubmittedDeposition (type alias)](#submitteddeposition-type-alias)
@@ -36,6 +39,16 @@ Added in v0.1.0
 ---
 
 # codecs
+
+## EmptyDepositionC
+
+**Signature**
+
+```ts
+export declare const EmptyDepositionC: C.Codec<string, string, EmptyDeposition>
+```
+
+Added in v0.1.10
 
 ## RecordC
 
@@ -91,6 +104,16 @@ export declare const createDeposition: (
 
 Added in v0.1.2
 
+## createEmptyDeposition
+
+**Signature**
+
+```ts
+export declare const createEmptyDeposition: () => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, EmptyDeposition>
+```
+
+Added in v0.1.10
+
 ## getRecord
 
 **Signature**
@@ -130,7 +153,7 @@ Added in v0.1.3
 ```ts
 export declare const updateDeposition: (
   metadata: DepositMetadata,
-  deposition: UnsubmittedDeposition
+  deposition: EmptyDeposition | UnsubmittedDeposition
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
 ```
 
@@ -218,6 +241,29 @@ export type DepositMetadata = {
 ```
 
 Added in v0.1.2
+
+## EmptyDeposition (type alias)
+
+**Signature**
+
+```ts
+export type EmptyDeposition = {
+  id: number
+  links: {
+    bucket: URL
+    self: URL
+  }
+  metadata: {
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
+  state: 'unsubmitted'
+  submitted: false
+}
+```
+
+Added in v0.1.10
 
 ## Record (type alias)
 

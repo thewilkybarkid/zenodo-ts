@@ -10,6 +10,7 @@ import * as _ from '../src'
 
 import Codec = C.Codec
 import DepositMetadata = _.DepositMetadata
+import EmptyDeposition = _.EmptyDeposition
 import Record = _.Record
 import Records = _.Records
 import ReaderTaskEither = RTE.ReaderTaskEither
@@ -24,6 +25,7 @@ declare const query: URLSearchParams
 declare const record: Record
 declare const records: Records
 declare const depositMetadata: DepositMetadata
+declare const emptyDeposition: EmptyDeposition
 declare const submittedDeposition: SubmittedDeposition
 declare const unsubmittedDeposition: UnsubmittedDeposition
 declare const zenodoAuthenticatedEnv: ZenodoAuthenticatedEnv
@@ -88,6 +90,17 @@ expectTypeOf(unsubmittedDeposition.metadata).toMatchTypeOf<DepositMetadata>()
 expectTypeOf(unsubmittedDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
 expectTypeOf(unsubmittedDeposition.state).toEqualTypeOf<'unsubmitted'>()
 expectTypeOf(unsubmittedDeposition.submitted).toEqualTypeOf<false>()
+
+//
+// EmptyDeposition
+//
+
+expectTypeOf(emptyDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(emptyDeposition.links.bucket).toEqualTypeOf<URL>()
+expectTypeOf(emptyDeposition.links.self).toEqualTypeOf<URL>()
+expectTypeOf(emptyDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
+expectTypeOf(emptyDeposition.state).toEqualTypeOf<'unsubmitted'>()
+expectTypeOf(emptyDeposition.submitted).toEqualTypeOf<false>()
 
 //
 // ZenodoEnv

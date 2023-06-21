@@ -178,6 +178,25 @@ export type DepositMetadata = {
 
 /**
  * @category model
+ * @since 0.1.10
+ */
+export type EmptyDeposition = {
+  id: number
+  links: {
+    bucket: URL
+    self: URL
+  }
+  metadata: {
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
+  state: 'unsubmitted'
+  submitted: false
+}
+
+/**
+ * @category model
  * @since 0.1.3
  */
 export type SubmittedDeposition = {
@@ -269,6 +288,21 @@ export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv,
 
 /**
  * @category constructors
+ * @since 0.1.10
+ */
+export const createEmptyDeposition = (): ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, EmptyDeposition> =>
+  pipe(
+    RTE.fromReader(zenodoUrl('deposit/depositions')),
+    RTE.chainReaderK(
+      flow(F.Request('POST'), F.setBody(JSON.stringify({}), 'application/json'), addAuthorizationHeader),
+    ),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.chainTaskEitherKW(F.decode(EmptyDepositionC)),
+  )
+
+/**
+ * @category constructors
  * @since 0.1.2
  */
 export const createDeposition: (
@@ -294,7 +328,7 @@ export const createDeposition: (
  */
 export const updateDeposition: (
   metadata: DepositMetadata,
-  deposition: UnsubmittedDeposition,
+  deposition: EmptyDeposition | UnsubmittedDeposition,
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = (metadata, deposition) =>
   pipe(
     F.Request('PUT')(deposition.links.self),
@@ -628,6 +662,30 @@ export const RecordsC: Codec<string, string, Records> = pipe(
         hits: C.array(BaseRecordC),
         total: C.number,
       }),
+    }),
+  ),
+)
+
+/**
+ * @category codecs
+ * @since 0.1.10
+ */
+export const EmptyDepositionC: Codec<string, string, EmptyDeposition> = pipe(
+  JsonC,
+  C.compose(
+    C.struct({
+      id: C.number,
+      links: C.struct({
+        bucket: UrlC,
+        self: UrlC,
+      }),
+      metadata: C.struct({
+        prereserve_doi: C.struct({
+          doi: DoiC,
+        }),
+      }),
+      state: C.literal('unsubmitted'),
+      submitted: C.literal(false),
     }),
   ),
 )
