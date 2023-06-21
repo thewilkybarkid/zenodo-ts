@@ -141,6 +141,9 @@ expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
 // updateDeposition
 //
 
+expectTypeOf(_.updateDeposition(depositMetadata, emptyDeposition)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+>()
 expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
 >()
@@ -149,6 +152,9 @@ expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatch
 // uploadFile
 //
 
+expectTypeOf(pipe(emptyDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+>()
 expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 >()

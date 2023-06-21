@@ -168,7 +168,7 @@ export declare const uploadFile: (upload: {
   readonly name: string
   readonly type: string
   readonly content: string
-}) => (deposition: UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+}) => (deposition: EmptyDeposition | UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 ```
 
 Added in v0.1.3

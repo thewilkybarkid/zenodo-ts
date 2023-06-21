@@ -466,7 +466,7 @@ describe('constructors', () => {
   describe('uploadFile', () => {
     test.prop([
       fc.string(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.string(),
       fc.string(),
       fc.string(),
@@ -494,7 +494,7 @@ describe('constructors', () => {
 
     test.prop([
       fc.string(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.string(),
       fc.string(),
       fc.string(),
@@ -512,16 +512,20 @@ describe('constructors', () => {
       },
     )
 
-    test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.string(), fc.string(), fc.string(), fc.error()])(
-      'when fetch throws an error',
-      async (zenodoApiKey, deposition, name, type, content, error) => {
-        const fetch: Fetch = () => Promise.reject(error)
+    test.prop([
+      fc.string(),
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
+      fc.string(),
+      fc.string(),
+      fc.string(),
+      fc.error(),
+    ])('when fetch throws an error', async (zenodoApiKey, deposition, name, type, content, error) => {
+      const fetch: Fetch = () => Promise.reject(error)
 
-        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+      const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(E.left(error))
-      },
-    )
+      expect(actual).toStrictEqual(E.left(error))
+    })
   })
 
   describe('publishDeposition', () => {
