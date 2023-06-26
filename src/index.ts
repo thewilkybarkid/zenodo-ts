@@ -51,6 +51,11 @@ export type Record = {
     communities?: NonEmptyArray<{
       id: string
     }>
+    contributors?: NonEmptyArray<{
+      name: string
+      orcid?: Orcid
+      type: string
+    }>
     creators: NonEmptyArray<{
       name: string
       orcid?: Orcid
@@ -120,6 +125,11 @@ export type Record = {
 export type DepositMetadata = {
   communities?: NonEmptyArray<{
     identifier: string
+  }>
+  contributors?: NonEmptyArray<{
+    name: string
+    orcid?: Orcid
+    type: string
   }>
   creators: NonEmptyArray<{
     name: string
@@ -601,6 +611,19 @@ const BaseRecordC = C.struct({
     C.intersect(
       C.partial({
         communities: NonEmptyArrayC(C.struct({ id: C.string })),
+        contributors: NonEmptyArrayC(
+          pipe(
+            C.struct({
+              name: C.string,
+              type: C.string,
+            }),
+            C.intersect(
+              C.partial({
+                orcid: OrcidC,
+              }),
+            ),
+          ),
+        ),
         keywords: NonEmptyArrayC(C.string),
         language: C.string,
         related_identifiers: NonEmptyArrayC(
@@ -634,6 +657,19 @@ const DepositMetadataC = pipe(
   C.intersect(
     C.partial({
       communities: NonEmptyArrayC(C.struct({ identifier: C.string })),
+      contributors: NonEmptyArrayC(
+        pipe(
+          C.struct({
+            name: C.string,
+            type: C.string,
+          }),
+          C.intersect(
+            C.partial({
+              orcid: OrcidC,
+            }),
+          ),
+        ),
+      ),
       keywords: NonEmptyArrayC(C.string),
       related_identifiers: NonEmptyArrayC(
         pipe(

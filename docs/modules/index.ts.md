@@ -184,6 +184,11 @@ export type DepositMetadata = {
   communities?: NonEmptyArray<{
     identifier: string
   }>
+  contributors?: NonEmptyArray<{
+    name: string
+    orcid?: Orcid
+    type: string
+  }>
   creators: NonEmptyArray<{
     name: string
     orcid?: Orcid
@@ -289,6 +294,11 @@ export type Record = {
   metadata: {
     communities?: NonEmptyArray<{
       id: string
+    }>
+    contributors?: NonEmptyArray<{
+      name: string
+      orcid?: Orcid
+      type: string
     }>
     creators: NonEmptyArray<{
       name: string

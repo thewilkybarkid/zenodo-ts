@@ -165,6 +165,19 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 { minLength: 1 },
               )
               .filter(isNonEmpty),
+            contributors: fc
+              .array(
+                fc.record(
+                  {
+                    name: fc.string(),
+                    orcid: orcid(),
+                    type: fc.string(),
+                  },
+                  { requiredKeys: ['name', 'type'] },
+                ),
+                { minLength: 1 },
+              )
+              .filter(isNonEmpty),
             keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
             related_identifiers: fc
               .array(
@@ -222,6 +235,19 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
               fc.record({
                 identifier: fc.string(),
               }),
+              { minLength: 1 },
+            )
+            .filter(isNonEmpty),
+          contributors: fc
+            .array(
+              fc.record(
+                {
+                  name: fc.string(),
+                  orcid: orcid(),
+                  type: fc.string(),
+                },
+                { requiredKeys: ['name', 'type'] },
+              ),
               { minLength: 1 },
             )
             .filter(isNonEmpty),
