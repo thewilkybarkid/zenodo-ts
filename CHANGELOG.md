@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.11...v0.1.12) (2023-06-27)
+
+
+### Bug Fixes
+
+* allow the compiler to infer correctly whether the deposition is empty or not ([9465edb](https://github.com/thewilkybarkid/zenodo-ts/commit/9465edba8cc17df340bdcf695bb76ec660e16775))
+
 ### [0.1.11](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.10...v0.1.11) (2023-06-27)
 
 
