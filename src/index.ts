@@ -336,9 +336,9 @@ export const createDeposition: (
  * @category constructors
  * @since 0.1.10
  */
-export const updateDeposition: (
+export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
   metadata: DepositMetadata,
-  deposition: EmptyDeposition | UnsubmittedDeposition,
+  deposition: T,
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = (metadata, deposition) =>
   pipe(
     F.Request('PUT')(deposition.links.self),
@@ -357,8 +357,8 @@ export const uploadFile: (upload: {
   readonly name: string
   readonly type: string
   readonly content: string
-}) => (
-  deposition: EmptyDeposition | UnsubmittedDeposition,
+}) => <T extends EmptyDeposition | UnsubmittedDeposition>(
+  deposition: T,
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void> = upload =>
   flow(
     deposition => `${deposition.links.bucket.toString()}/${upload.name}`,

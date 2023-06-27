@@ -151,9 +151,9 @@ Added in v0.1.3
 **Signature**
 
 ```ts
-export declare const updateDeposition: (
+export declare const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
   metadata: DepositMetadata,
-  deposition: EmptyDeposition | UnsubmittedDeposition
+  deposition: T
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
 ```
 
@@ -168,7 +168,9 @@ export declare const uploadFile: (upload: {
   readonly name: string
   readonly type: string
   readonly content: string
-}) => (deposition: EmptyDeposition | UnsubmittedDeposition) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+}) => <T extends EmptyDeposition | UnsubmittedDeposition>(
+  deposition: T
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 ```
 
 Added in v0.1.3
