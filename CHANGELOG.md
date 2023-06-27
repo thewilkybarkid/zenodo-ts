@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.10...v0.1.11) (2023-06-27)
+
+
+### Features
+
+* add contributors ([957a52d](https://github.com/thewilkybarkid/zenodo-ts/commit/957a52d5cb03bf049632ecdf7b65abf24ffe0e7c))
+* upload files to empty depositions ([91dd08d](https://github.com/thewilkybarkid/zenodo-ts/commit/91dd08de836216598463f419ce8d69bb542371c1))
+
 ### [0.1.10](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.9...v0.1.10) (2023-06-21)
 
 
