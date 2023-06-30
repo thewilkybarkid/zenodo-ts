@@ -3,7 +3,7 @@
  */
 import { Doi, isDoi } from 'doi-ts'
 import * as F from 'fetch-fp-ts'
-import { isNonEmpty } from 'fp-ts/Array'
+import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as J from 'fp-ts/Json'
 import * as NEA from 'fp-ts/NonEmptyArray'
@@ -418,7 +418,7 @@ const JsonC = C.make(
 )
 
 const NonEmptyArrayC = <O, A>(codec: Codec<unknown, O, A>) =>
-  C.make(pipe(D.array(codec), D.refine(isNonEmpty, 'NonEmptyArray')), C.array(codec))
+  C.make(pipe(D.array(codec), D.refine(A.isNonEmpty, 'NonEmptyArray')), C.array(codec))
 
 const NumberFromStringC = C.make(
   pipe(
@@ -610,7 +610,13 @@ const BaseRecordC = C.struct({
     }),
     C.intersect(
       C.partial({
-        communities: NonEmptyArrayC(C.struct({ id: C.string })),
+        communities: pipe(
+          C.array(C.struct({ id: C.string })),
+          C.imap(
+            A.match(() => undefined, identity),
+            communities => (communities ?? []) as never,
+          ),
+        ),
         contributors: NonEmptyArrayC(
           pipe(
             C.struct({
