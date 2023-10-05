@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.14](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.13...v0.1.14) (2023-10-05)
+
+
+### Features
+
+* add notes to Record ([2a88d7f](https://github.com/thewilkybarkid/zenodo-ts/commit/2a88d7f19ddbf95b25c3066f9c98af0ce117a7b6))
+
 ### [0.1.13](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.12...v0.1.13) (2023-06-30)
 
 
