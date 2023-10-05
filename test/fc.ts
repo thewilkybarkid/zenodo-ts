@@ -179,6 +179,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
               )
               .filter(isNonEmpty),
             keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
+            notes: fc.string(),
             related_identifiers: fc
               .array(
                 fc.record(

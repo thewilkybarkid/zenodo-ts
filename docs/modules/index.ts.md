@@ -313,6 +313,7 @@ export type Record = {
       id: string
     }
     keywords?: NonEmptyArray<string>
+    notes?: string
     publication_date: Date
     related_identifiers?: NonEmptyArray<{
       scheme: string

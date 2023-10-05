@@ -67,6 +67,7 @@ export type Record = {
       id: string
     }
     keywords?: NonEmptyArray<string>
+    notes?: string
     publication_date: Date
     related_identifiers?: NonEmptyArray<{
       scheme: string
@@ -632,6 +633,7 @@ const BaseRecordC = C.struct({
         ),
         keywords: NonEmptyArrayC(C.string),
         language: C.string,
+        notes: C.string,
         related_identifiers: NonEmptyArrayC(
           pipe(
             C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
