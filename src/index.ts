@@ -19,9 +19,11 @@ import safeStableStringify from 'safe-stable-stringify'
 import { URL } from 'url'
 
 import Codec = C.Codec
+import DecodeError = D.DecodeError
 import FetchEnv = F.FetchEnv
 import NonEmptyArray = NEA.NonEmptyArray
 import ReaderTaskEither = RTE.ReaderTaskEither
+import Response = F.Response
 
 // -------------------------------------------------------------------------------------
 // model
@@ -275,9 +277,9 @@ export type Records = {
  * @category constructors
  * @since 0.1.0
  */
-export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Record> = id =>
+export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Record> = id =>
   pipe(
-    RTE.fromReader(zenodoUrl(`records/${id.toString()}`)),
+    RTE.rightReader(zenodoUrl(`records/${id.toString()}`)),
     RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
@@ -288,9 +290,11 @@ export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Rec
  * @category constructors
  * @since 0.1.1
  */
-export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, unknown, Records> = query =>
+export const getRecords: (
+  query: URLSearchParams,
+) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records> = query =>
   pipe(
-    RTE.fromReader(zenodoUrl(`records/?${query.toString()}`)),
+    RTE.rightReader(zenodoUrl(`records/?${query.toString()}`)),
     RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
@@ -301,9 +305,13 @@ export const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv,
  * @category constructors
  * @since 0.1.10
  */
-export const createEmptyDeposition = (): ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, EmptyDeposition> =>
+export const createEmptyDeposition = (): ReaderTaskEither<
+  ZenodoAuthenticatedEnv,
+  Error | DecodeError | Response,
+  EmptyDeposition
+> =>
   pipe(
-    RTE.fromReader(zenodoUrl('deposit/depositions')),
+    RTE.rightReader(zenodoUrl('deposit/depositions')),
     RTE.chainReaderK(
       flow(F.Request('POST'), F.setBody(JSON.stringify({}), 'application/json'), addAuthorizationHeader),
     ),
@@ -318,9 +326,9 @@ export const createEmptyDeposition = (): ReaderTaskEither<ZenodoAuthenticatedEnv
  */
 export const createDeposition: (
   metadata: DepositMetadata,
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = metadata =>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition> = metadata =>
   pipe(
-    RTE.fromReader(zenodoUrl('deposit/depositions')),
+    RTE.rightReader(zenodoUrl('deposit/depositions')),
     RTE.chainReaderK(
       flow(
         F.Request('POST'),
@@ -340,7 +348,10 @@ export const createDeposition: (
 export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
   metadata: DepositMetadata,
   deposition: T,
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition> = (metadata, deposition) =>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition> = (
+  metadata,
+  deposition,
+) =>
   pipe(
     F.Request('PUT')(deposition.links.self),
     F.setBody(JSON.stringify({ metadata: DepositMetadataC.encode(metadata) }), 'application/json'),
@@ -360,7 +371,7 @@ export const uploadFile: (upload: {
   readonly content: string
 }) => <T extends EmptyDeposition | UnsubmittedDeposition>(
   deposition: T,
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void> = upload =>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | Response, void> = upload =>
   flow(
     deposition => `${deposition.links.bucket.toString()}/${upload.name}`,
     F.Request('PUT'),
@@ -377,7 +388,7 @@ export const uploadFile: (upload: {
  */
 export const publishDeposition: (
   deposition: UnsubmittedDeposition,
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition> = deposition =>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition> = deposition =>
   pipe(
     F.Request('POST')(deposition.links.publish),
     RTE.fromReaderK(addAuthorizationHeader),

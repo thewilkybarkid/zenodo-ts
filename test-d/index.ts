@@ -1,10 +1,11 @@
 import { Doi } from 'doi-ts'
 import { expectTypeOf } from 'expect-type'
-import { FetchEnv } from 'fetch-fp-ts'
+import { FetchEnv, Response } from 'fetch-fp-ts'
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import * as C from 'io-ts/Codec'
+import { DecodeError } from 'io-ts/Decoder'
 import { Orcid } from 'orcid-id-ts'
 import * as _ from '../src'
 
@@ -121,20 +122,20 @@ expectTypeOf(zenodoAuthenticatedEnv.zenodoApiKey).toEqualTypeOf<string>()
 // getRecord
 //
 
-expectTypeOf(_.getRecord(number)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unknown, Record>>()
+expectTypeOf(_.getRecord(number)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Record>>()
 
 //
 // getRecords
 //
 
-expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, unknown, Records>>()
+expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records>>()
 
 //
 // createDeposition
 //
 
 expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
-  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 >()
 
 //
@@ -142,10 +143,10 @@ expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
 //
 
 expectTypeOf(_.updateDeposition(depositMetadata, emptyDeposition)).toMatchTypeOf<
-  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 >()
 expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatchTypeOf<
-  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 >()
 
 //
@@ -156,7 +157,7 @@ expectTypeOf(pipe(emptyDeposition, _.uploadFile({ name: string, type: string, co
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 >()
 expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
-  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | Response, void>
 >()
 
 //
@@ -164,7 +165,7 @@ expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: stri
 //
 
 expectTypeOf(pipe(unsubmittedDeposition, _.publishDeposition)).toMatchTypeOf<
-  ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition>
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition>
 >()
 
 //

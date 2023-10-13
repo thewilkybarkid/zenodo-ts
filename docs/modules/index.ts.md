@@ -99,7 +99,7 @@ Added in v0.1.2
 ```ts
 export declare const createDeposition: (
   metadata: DepositMetadata
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 ```
 
 Added in v0.1.2
@@ -109,7 +109,11 @@ Added in v0.1.2
 **Signature**
 
 ```ts
-export declare const createEmptyDeposition: () => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, EmptyDeposition>
+export declare const createEmptyDeposition: () => ReaderTaskEither<
+  ZenodoAuthenticatedEnv,
+  Error | DecodeError | Response,
+  EmptyDeposition
+>
 ```
 
 Added in v0.1.10
@@ -119,7 +123,7 @@ Added in v0.1.10
 **Signature**
 
 ```ts
-export declare const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, unknown, Record>
+export declare const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Record>
 ```
 
 Added in v0.1.0
@@ -129,7 +133,9 @@ Added in v0.1.0
 **Signature**
 
 ```ts
-export declare const getRecords: (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, unknown, Records>
+export declare const getRecords: (
+  query: URLSearchParams
+) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records>
 ```
 
 Added in v0.1.1
@@ -141,7 +147,7 @@ Added in v0.1.1
 ```ts
 export declare const publishDeposition: (
   deposition: UnsubmittedDeposition
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, SubmittedDeposition>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition>
 ```
 
 Added in v0.1.3
@@ -154,7 +160,7 @@ Added in v0.1.3
 export declare const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
   metadata: DepositMetadata,
   deposition: T
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, UnsubmittedDeposition>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 ```
 
 Added in v0.1.10
@@ -170,7 +176,7 @@ export declare const uploadFile: (upload: {
   readonly content: string
 }) => <T extends EmptyDeposition | UnsubmittedDeposition>(
   deposition: T
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | Response, void>
 ```
 
 Added in v0.1.3
