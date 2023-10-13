@@ -110,7 +110,7 @@ describe('constructors', () => {
 
         await _.getRecords(query)({ fetch, zenodoUrl })()
 
-        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/?${query.toString()}`, {
+        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records?${query.toString()}`, {
           headers: { Accept: 'application/json' },
           method: 'GET',
         })
@@ -122,7 +122,7 @@ describe('constructors', () => {
 
       await _.getRecords(query)({ fetch })()
 
-      expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/?${query.toString()}`, {
+      expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records?${query.toString()}`, {
         headers: { Accept: 'application/json' },
         method: 'GET',
       })
