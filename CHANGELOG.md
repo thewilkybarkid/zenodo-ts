@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.15](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.14...v0.1.15) (2023-10-13)
+
+
+### Features
+
+* set Accept headers ([cdc03e6](https://github.com/thewilkybarkid/zenodo-ts/commit/cdc03e6e180a59d0ef3ed7ee41ca5b4b942c12b4))
+* type errors ([6a123d6](https://github.com/thewilkybarkid/zenodo-ts/commit/6a123d6b47e548ad4298bbee62706c185900d8c7))
+
 ### [0.1.14](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.13...v0.1.14) (2023-10-05)
 
 
