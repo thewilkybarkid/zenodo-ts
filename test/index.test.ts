@@ -16,7 +16,7 @@ describe('constructors', () => {
       await _.getRecord(id)({ fetch, zenodoUrl })()
 
       expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/${id.toString()}`, {
-        headers: {},
+        headers: { Accept: 'application/json' },
         method: 'GET',
       })
     })
@@ -27,7 +27,7 @@ describe('constructors', () => {
       await _.getRecord(id)({ fetch })()
 
       expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/${id.toString()}`, {
-        headers: {},
+        headers: { Accept: 'application/json' },
         method: 'GET',
       })
     })
@@ -111,7 +111,7 @@ describe('constructors', () => {
         await _.getRecords(query)({ fetch, zenodoUrl })()
 
         expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/records/?${query.toString()}`, {
-          headers: {},
+          headers: { Accept: 'application/json' },
           method: 'GET',
         })
       },
@@ -123,7 +123,7 @@ describe('constructors', () => {
       await _.getRecords(query)({ fetch })()
 
       expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/records/?${query.toString()}`, {
-        headers: {},
+        headers: { Accept: 'application/json' },
         method: 'GET',
       })
     })
@@ -209,6 +209,7 @@ describe('constructors', () => {
         expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
           body: expect.anything(),
           headers: {
+            Accept: 'application/json',
             Authorization: `Bearer ${zenodoApiKey}`,
             'Content-Type': 'application/json',
           },
@@ -227,6 +228,7 @@ describe('constructors', () => {
         expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
           body: expect.anything(),
           headers: {
+            Accept: 'application/json',
             Authorization: `Bearer ${zenodoApiKey}`,
             'Content-Type': 'application/json',
           },
@@ -308,6 +310,7 @@ describe('constructors', () => {
         expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions`, {
           body: '{}',
           headers: {
+            Accept: 'application/json',
             Authorization: `Bearer ${zenodoApiKey}`,
             'Content-Type': 'application/json',
           },
@@ -324,6 +327,7 @@ describe('constructors', () => {
       expect(fetch).toHaveBeenCalledWith('https://zenodo.org/api/deposit/depositions', {
         body: '{}',
         headers: {
+          Accept: 'application/json',
           Authorization: `Bearer ${zenodoApiKey}`,
           'Content-Type': 'application/json',
         },
@@ -410,6 +414,7 @@ describe('constructors', () => {
       expect(fetch).toHaveBeenCalledWith(deposition.links.self.href, {
         body: expect.anything(),
         headers: {
+          Accept: 'application/json',
           Authorization: `Bearer ${zenodoApiKey}`,
           'Content-Type': 'application/json',
         },
@@ -551,6 +556,7 @@ describe('constructors', () => {
         expect(actual).toStrictEqual(D.success(submittedDeposition))
         expect(fetch).toHaveBeenCalledWith(unsubmittedDeposition.links.publish.href, {
           headers: {
+            Accept: 'application/json',
             Authorization: `Bearer ${zenodoApiKey}`,
           },
           method: 'POST',

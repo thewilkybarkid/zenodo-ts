@@ -280,7 +280,7 @@ export type Records = {
 export const getRecord: (id: number) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Record> = id =>
   pipe(
     RTE.rightReader(zenodoUrl(`records/${id.toString()}`)),
-    RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
+    RTE.chainReaderKW(flow(F.Request('GET'), F.setHeader('Accept', 'application/json'), addAuthorizationHeader)),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordC)),
@@ -295,7 +295,7 @@ export const getRecords: (
 ) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records> = query =>
   pipe(
     RTE.rightReader(zenodoUrl(`records/?${query.toString()}`)),
-    RTE.chainReaderKW(flow(F.Request('GET'), addAuthorizationHeader)),
+    RTE.chainReaderKW(flow(F.Request('GET'), F.setHeader('Accept', 'application/json'), addAuthorizationHeader)),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
     RTE.chainTaskEitherKW(F.decode(RecordsC)),
@@ -313,7 +313,12 @@ export const createEmptyDeposition = (): ReaderTaskEither<
   pipe(
     RTE.rightReader(zenodoUrl('deposit/depositions')),
     RTE.chainReaderK(
-      flow(F.Request('POST'), F.setBody(JSON.stringify({}), 'application/json'), addAuthorizationHeader),
+      flow(
+        F.Request('POST'),
+        F.setHeader('Accept', 'application/json'),
+        F.setBody(JSON.stringify({}), 'application/json'),
+        addAuthorizationHeader,
+      ),
     ),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
@@ -332,6 +337,7 @@ export const createDeposition: (
     RTE.chainReaderK(
       flow(
         F.Request('POST'),
+        F.setHeader('Accept', 'application/json'),
         F.setBody(JSON.stringify({ metadata: DepositMetadataC.encode(metadata) }), 'application/json'),
         addAuthorizationHeader,
       ),
@@ -354,6 +360,7 @@ export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDepositio
 ) =>
   pipe(
     F.Request('PUT')(deposition.links.self),
+    F.setHeader('Accept', 'application/json'),
     F.setBody(JSON.stringify({ metadata: DepositMetadataC.encode(metadata) }), 'application/json'),
     RTE.fromReaderK(addAuthorizationHeader),
     RTE.chainW(F.send),
@@ -391,6 +398,7 @@ export const publishDeposition: (
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition> = deposition =>
   pipe(
     F.Request('POST')(deposition.links.publish),
+    F.setHeader('Accept', 'application/json'),
     RTE.fromReaderK(addAuthorizationHeader),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.ACCEPTED), identity),
