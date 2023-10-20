@@ -198,6 +198,117 @@ describe('constructors', () => {
     })
   })
 
+  describe('getCommunityRecords', () => {
+    test.prop([fc.url(), fc.lorem(), fc.urlSearchParams(), fc.response()])(
+      'with a Zenodo URL',
+      async (zenodoUrl, community, query, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.getCommunityRecords(community)(query)({ fetch, zenodoUrl })()
+
+        expect(fetch).toHaveBeenCalledWith(
+          `${zenodoUrl.origin}/api/communities/${encodeURIComponent(community)}/records?${query.toString()}`,
+          {
+            headers: { Accept: 'application/json' },
+            method: 'GET',
+          },
+        )
+      },
+    )
+
+    test.prop([fc.lorem(), fc.urlSearchParams(), fc.response()])(
+      'without a Zenodo URL',
+      async (community, query, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.getCommunityRecords(community)(query)({ fetch })()
+
+        expect(fetch).toHaveBeenCalledWith(
+          `https://zenodo.org/api/communities/${encodeURIComponent(community)}/records?${query.toString()}`,
+          {
+            headers: { Accept: 'application/json' },
+            method: 'GET',
+          },
+        )
+      },
+    )
+
+    test.prop([fc.string(), fc.lorem(), fc.urlSearchParams(), fc.response()])(
+      'with a Zenodo API key',
+      async (zenodoApiKey, community, query, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.getCommunityRecords(community)(query)({ fetch, zenodoApiKey })()
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            headers: expect.objectContaining({
+              Authorization: `Bearer ${zenodoApiKey}`,
+            }),
+          }),
+        )
+      },
+    )
+
+    test.prop([
+      fc.lorem(),
+      fc.urlSearchParams(),
+      fc
+        .zenodoRecords()
+        .chain(records =>
+          fc.tuple(
+            fc.constant(records),
+            fc.response({ status: fc.constant(StatusCodes.OK), text: fc.constant(_.RecordsC.encode(records)) }),
+          ),
+        ),
+    ])('when the records can be decoded', async (community, query, [records, response]) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getCommunityRecords(community)(query)({ fetch })()
+
+      expect(actual).toStrictEqual(D.success(records))
+    })
+
+    test.prop([
+      fc.lorem(),
+      fc.urlSearchParams(),
+      fc.response({
+        status: fc.constant(StatusCodes.OK),
+        text: fc.string(),
+      }),
+    ])('when the records cannot be decoded', async (community, query, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getCommunityRecords(community)(query)({ fetch })()
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+
+    test.prop([
+      fc.lorem(),
+      fc.urlSearchParams(),
+      fc.response({ status: fc.integer().filter(status => status !== StatusCodes.OK) }),
+    ])('when the response has a non-200 status code', async (community, query, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getCommunityRecords(community)(query)({ fetch })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.lorem(), fc.urlSearchParams(), fc.error()])(
+      'when fetch throws an error',
+      async (community, query, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
+
+        const actual = await _.getCommunityRecords(community)(query)({ fetch })()
+
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
+  })
+
   describe('createDeposition', () => {
     test.prop([fc.url(), fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
       'with a Zenodo URL',

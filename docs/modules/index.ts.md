@@ -21,6 +21,7 @@ Added in v0.1.0
 - [constructors](#constructors)
   - [createDeposition](#createdeposition)
   - [createEmptyDeposition](#createemptydeposition)
+  - [getCommunityRecords](#getcommunityrecords)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
   - [publishDeposition](#publishdeposition)
@@ -117,6 +118,18 @@ export declare const createEmptyDeposition: () => ReaderTaskEither<
 ```
 
 Added in v0.1.10
+
+## getCommunityRecords
+
+**Signature**
+
+```ts
+export declare const getCommunityRecords: (
+  community: string
+) => (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records>
+```
+
+Added in v0.1.16
 
 ## getRecord
 

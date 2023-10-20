@@ -131,6 +131,14 @@ expectTypeOf(_.getRecord(number)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, Erro
 expectTypeOf(_.getRecords(query)).toEqualTypeOf<ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records>>()
 
 //
+// getCommunityRecords
+//
+
+expectTypeOf(_.getCommunityRecords(string)(query)).toEqualTypeOf<
+  ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records>
+>()
+
+//
 // createDeposition
 //
 

@@ -303,6 +303,22 @@ export const getRecords: (
 
 /**
  * @category constructors
+ * @since 0.1.16
+ */
+export const getCommunityRecords: (
+  community: string,
+) => (query: URLSearchParams) => ReaderTaskEither<ZenodoEnv, Error | DecodeError | Response, Records> =
+  community => query =>
+    pipe(
+      RTE.rightReader(zenodoUrl(`communities/${community}/records?${query.toString()}`)),
+      RTE.chainReaderKW(flow(F.Request('GET'), F.setHeader('Accept', 'application/json'), addAuthorizationHeader)),
+      RTE.chainW(F.send),
+      RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
+      RTE.chainTaskEitherKW(F.decode(RecordsC)),
+    )
+
+/**
+ * @category constructors
  * @since 0.1.10
  */
 export const createEmptyDeposition = (): ReaderTaskEither<
