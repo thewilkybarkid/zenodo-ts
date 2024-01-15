@@ -13,6 +13,7 @@ import Codec = C.Codec
 import DepositMetadata = _.DepositMetadata
 import Deposition = _.Deposition
 import EmptyDeposition = _.EmptyDeposition
+import InProgressDeposition = _.InProgressDeposition
 import Record = _.Record
 import Records = _.Records
 import ReaderTaskEither = RTE.ReaderTaskEither
@@ -29,6 +30,7 @@ declare const records: Records
 declare const depositMetadata: DepositMetadata
 declare const deposition: Deposition
 declare const emptyDeposition: EmptyDeposition
+declare const inProgressDeposition: InProgressDeposition
 declare const submittedDeposition: SubmittedDeposition
 declare const unsubmittedDeposition: UnsubmittedDeposition
 declare const zenodoAuthenticatedEnv: ZenodoAuthenticatedEnv
@@ -77,7 +79,9 @@ expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
 // Deposition
 //
 
-expectTypeOf(deposition).toEqualTypeOf<EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition>()
+expectTypeOf(deposition).toEqualTypeOf<
+  EmptyDeposition | InProgressDeposition | SubmittedDeposition | UnsubmittedDeposition
+>()
 
 //
 // SubmittedDeposition
@@ -112,6 +116,17 @@ expectTypeOf(emptyDeposition.links.self).toEqualTypeOf<URL>()
 expectTypeOf(emptyDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
 expectTypeOf(emptyDeposition.state).toEqualTypeOf<'unsubmitted'>()
 expectTypeOf(emptyDeposition.submitted).toEqualTypeOf<false>()
+
+//
+// InProgressDeposition
+//
+
+expectTypeOf(inProgressDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(inProgressDeposition.metadata).toMatchTypeOf<DepositMetadata>()
+expectTypeOf(inProgressDeposition.metadata.doi).toEqualTypeOf<Doi>()
+expectTypeOf(inProgressDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()
+expectTypeOf(inProgressDeposition.state).toEqualTypeOf<'inprogress'>()
+expectTypeOf(inProgressDeposition.submitted).toEqualTypeOf<true>()
 
 //
 // ZenodoEnv

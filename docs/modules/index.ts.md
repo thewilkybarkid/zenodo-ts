@@ -15,6 +15,7 @@ Added in v0.1.0
 - [codecs](#codecs)
   - [DepositionC](#depositionc)
   - [EmptyDepositionC](#emptydepositionc)
+  - [InProgressDepositionC](#inprogressdepositionc)
   - [RecordC](#recordc)
   - [RecordsC](#recordsc)
   - [SubmittedDepositionC](#submitteddepositionc)
@@ -33,6 +34,7 @@ Added in v0.1.0
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
   - [Deposition (type alias)](#deposition-type-alias)
   - [EmptyDeposition (type alias)](#emptydeposition-type-alias)
+  - [InProgressDeposition (type alias)](#inprogressdeposition-type-alias)
   - [Record (type alias)](#record-type-alias)
   - [Records (type alias)](#records-type-alias)
   - [SubmittedDeposition (type alias)](#submitteddeposition-type-alias)
@@ -63,6 +65,16 @@ export declare const EmptyDepositionC: C.Codec<string, string, EmptyDeposition>
 ```
 
 Added in v0.1.10
+
+## InProgressDepositionC
+
+**Signature**
+
+```ts
+export declare const InProgressDepositionC: C.Codec<string, string, InProgressDeposition>
+```
+
+Added in v0.1.17
 
 ## RecordC
 
@@ -300,7 +312,7 @@ Added in v0.1.2
 **Signature**
 
 ```ts
-export type Deposition = EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition
+export type Deposition = EmptyDeposition | InProgressDeposition | SubmittedDeposition | UnsubmittedDeposition
 ```
 
 Added in v0.1.17
@@ -327,6 +339,26 @@ export type EmptyDeposition = {
 ```
 
 Added in v0.1.10
+
+## InProgressDeposition (type alias)
+
+**Signature**
+
+```ts
+export type InProgressDeposition = {
+  id: number
+  metadata: DepositMetadata & {
+    doi: Doi
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
+  state: 'inprogress'
+  submitted: true
+}
+```
+
+Added in v0.1.17
 
 ## Record (type alias)
 

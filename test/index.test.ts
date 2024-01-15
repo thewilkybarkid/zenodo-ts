@@ -839,6 +839,23 @@ describe('codecs', () => {
     })
   })
 
+  describe('InProgressDepositionC', () => {
+    test.prop([fc.zenodoInProgressDeposition()])(
+      'when the in-progress deposition can be decoded',
+      inProgressDeposition => {
+        const actual = pipe(inProgressDeposition, _.InProgressDepositionC.encode, _.InProgressDepositionC.decode)
+
+        expect(actual).toStrictEqual(D.success(inProgressDeposition))
+      },
+    )
+
+    test.prop([fc.string()])('when the in-progress deposition cannot be decoded', string => {
+      const actual = _.InProgressDepositionC.decode(string)
+
+      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+    })
+  })
+
   describe('SubmittedDepositionC', () => {
     test.prop([fc.zenodoSubmittedDeposition()])('when the submitted deposition can be decoded', submittedDeposition => {
       const actual = pipe(submittedDeposition, _.SubmittedDepositionC.encode, _.SubmittedDepositionC.decode)

@@ -195,7 +195,7 @@ export type DepositMetadata = {
  * @category model
  * @since 0.1.17
  */
-export type Deposition = EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition
+export type Deposition = EmptyDeposition | InProgressDeposition | SubmittedDeposition | UnsubmittedDeposition
 
 /**
  * @category model
@@ -214,6 +214,22 @@ export type EmptyDeposition = {
   }
   state: 'unsubmitted'
   submitted: false
+}
+
+/**
+ * @category model
+ * @since 0.1.17
+ */
+export type InProgressDeposition = {
+  id: number
+  metadata: DepositMetadata & {
+    doi: Doi
+    prereserve_doi: {
+      doi: Doi
+    }
+  }
+  state: 'inprogress'
+  submitted: true
 }
 
 /**
@@ -803,6 +819,32 @@ export const EmptyDepositionC: Codec<string, string, EmptyDeposition> = pipe(
 
 /**
  * @category codecs
+ * @since 0.1.17
+ */
+export const InProgressDepositionC: Codec<string, string, InProgressDeposition> = pipe(
+  JsonC,
+  C.compose(
+    C.struct({
+      id: C.number,
+      metadata: pipe(
+        DepositMetadataC,
+        C.intersect(
+          C.struct({
+            doi: DoiC,
+            prereserve_doi: C.struct({
+              doi: DoiC,
+            }),
+          }),
+        ),
+      ),
+      state: C.literal('inprogress'),
+      submitted: C.literal(true),
+    }),
+  ),
+)
+
+/**
+ * @category codecs
  * @since 0.1.3
  */
 export const SubmittedDepositionC: Codec<string, string, SubmittedDeposition> = pipe(
@@ -861,10 +903,12 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
 export const DepositionC: Codec<string, string, Deposition> =
   // Unfortunately, there's no way to describe a union encoder, so we must implement it ourselves.
   // Refs https://github.com/gcanti/io-ts/issues/625#issuecomment-1007478009
-  C.make(D.union(SubmittedDepositionC, UnsubmittedDepositionC, EmptyDepositionC), {
+  C.make(D.union(SubmittedDepositionC, InProgressDepositionC, UnsubmittedDepositionC, EmptyDepositionC), {
     encode: deposition =>
       isSubmitted(deposition)
         ? SubmittedDepositionC.encode(deposition)
+        : isInProgress(deposition)
+        ? InProgressDepositionC.encode(deposition)
         : isEmpty(deposition)
         ? EmptyDepositionC.encode(deposition)
         : UnsubmittedDepositionC.encode(deposition),
@@ -882,7 +926,11 @@ const addAuthorizationHeader = (request: F.Request) =>
     pipe(request, typeof zenodoApiKey === 'string' ? F.setHeader('Authorization', `Bearer ${zenodoApiKey}`) : identity),
   )
 
-const isSubmitted = (deposition: Deposition): deposition is SubmittedDeposition => deposition.submitted
+const isSubmitted = (deposition: Deposition): deposition is SubmittedDeposition =>
+  deposition.submitted && deposition.state === 'done'
+
+const isInProgress = (deposition: Deposition): deposition is InProgressDeposition =>
+  deposition.submitted && deposition.state === 'inprogress'
 
 const isEmpty = (deposition: Deposition): deposition is EmptyDeposition =>
   !deposition.submitted && !('title' in deposition.metadata)

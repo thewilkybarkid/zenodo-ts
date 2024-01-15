@@ -328,7 +328,12 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
     .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas))
 
 export const zenodoDeposition = (): fc.Arbitrary<_.Deposition> =>
-  fc.oneof(zenodoEmptyDeposition(), zenodoSubmittedDeposition(), zenodoUnsubmittedDeposition())
+  fc.oneof(
+    zenodoEmptyDeposition(),
+    zenodoInProgressDeposition(),
+    zenodoSubmittedDeposition(),
+    zenodoUnsubmittedDeposition(),
+  )
 
 export const zenodoEmptyDeposition = (): fc.Arbitrary<_.EmptyDeposition> =>
   fc.record({
@@ -344,6 +349,24 @@ export const zenodoEmptyDeposition = (): fc.Arbitrary<_.EmptyDeposition> =>
     }),
     state: fc.constant('unsubmitted'),
     submitted: fc.constant(false),
+  })
+
+export const zenodoInProgressDeposition = (): fc.Arbitrary<_.InProgressDeposition> =>
+  fc.record({
+    id: fc.integer(),
+    metadata: fc
+      .tuple(
+        zenodoDepositMetadata(),
+        fc.record({
+          doi: doi(),
+          prereserve_doi: fc.record({
+            doi: doi(),
+          }),
+        }),
+      )
+      .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas)),
+    state: fc.constant('inprogress'),
+    submitted: fc.constant(true),
   })
 
 export const zenodoSubmittedDeposition = (): fc.Arbitrary<_.SubmittedDeposition> =>
