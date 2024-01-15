@@ -251,6 +251,7 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
               { minLength: 1 },
             )
             .filter(isNonEmpty),
+          imprint_publisher: fc.string(),
           keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
           license: fc.string(),
           publication_date: fc

@@ -138,6 +138,7 @@ export type DepositMetadata = {
     orcid?: Orcid
   }>
   description: string
+  imprint_publisher?: string
   keywords?: NonEmptyArray<string>
   license?: string
   publication_date?: Date
@@ -719,6 +720,7 @@ const DepositMetadataC = pipe(
         ),
       ),
       keywords: NonEmptyArrayC(C.string),
+      imprint_publisher: C.string,
       license: C.string,
       publication_date: PlainDateC,
       related_identifiers: NonEmptyArrayC(

@@ -214,6 +214,7 @@ export type DepositMetadata = {
     orcid?: Orcid
   }>
   description: string
+  imprint_publisher?: string
   keywords?: NonEmptyArray<string>
   license?: string
   publication_date?: Date
