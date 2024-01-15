@@ -23,6 +23,7 @@ Added in v0.1.0
   - [createDeposition](#createdeposition)
   - [createEmptyDeposition](#createemptydeposition)
   - [getCommunityRecords](#getcommunityrecords)
+  - [getDeposition](#getdeposition)
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
   - [publishDeposition](#publishdeposition)
@@ -142,6 +143,18 @@ export declare const getCommunityRecords: (
 ```
 
 Added in v0.1.16
+
+## getDeposition
+
+**Signature**
+
+```ts
+export declare const getDeposition: (
+  id: number
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, Deposition>
+```
+
+Added in v0.1.17
 
 ## getRecord
 

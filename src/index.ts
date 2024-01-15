@@ -327,6 +327,21 @@ export const getCommunityRecords: (
 
 /**
  * @category constructors
+ * @since 0.1.17
+ */
+export const getDeposition: (
+  id: number,
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, Deposition> = id =>
+  pipe(
+    RTE.rightReader(zenodoUrl(`deposit/depositions/${id.toString()}`)),
+    RTE.chainReaderKW(flow(F.Request('GET'), F.setHeader('Accept', 'application/json'), addAuthorizationHeader)),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
+    RTE.chainTaskEitherKW(F.decode(DepositionC)),
+  )
+
+/**
+ * @category constructors
  * @since 0.1.10
  */
 export const createEmptyDeposition = (): ReaderTaskEither<

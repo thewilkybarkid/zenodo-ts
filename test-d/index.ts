@@ -149,6 +149,14 @@ expectTypeOf(_.getCommunityRecords(string)(query)).toEqualTypeOf<
 >()
 
 //
+// getDeposition
+//
+
+expectTypeOf(_.getDeposition(number)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, Deposition>
+>()
+
+//
 // createDeposition
 //
 

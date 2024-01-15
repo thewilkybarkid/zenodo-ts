@@ -309,6 +309,93 @@ describe('constructors', () => {
     )
   })
 
+  describe('getDeposition', () => {
+    test.prop([fc.url(), fc.string(), fc.integer(), fc.response()])(
+      'with a Zenodo URL',
+      async (zenodoUrl, zenodoApiKey, id, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.getDeposition(id)({ fetch, zenodoApiKey, zenodoUrl })()
+
+        expect(fetch).toHaveBeenCalledWith(`${zenodoUrl.origin}/api/deposit/depositions/${id.toString()}`, {
+          headers: { Accept: 'application/json', Authorization: `Bearer ${zenodoApiKey}` },
+          method: 'GET',
+        })
+      },
+    )
+
+    test.prop([fc.string(), fc.integer(), fc.response()])(
+      'without a Zenodo URL',
+      async (zenodoApiKey, id, response) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        await _.getDeposition(id)({ fetch, zenodoApiKey })()
+
+        expect(fetch).toHaveBeenCalledWith(`https://zenodo.org/api/deposit/depositions/${id.toString()}`, {
+          headers: { Accept: 'application/json', Authorization: `Bearer ${zenodoApiKey}` },
+          method: 'GET',
+        })
+      },
+    )
+
+    test.prop([
+      fc.string(),
+      fc.integer(),
+      fc
+        .zenodoDeposition()
+        .chain(deposition =>
+          fc.tuple(
+            fc.constant(deposition),
+            fc.response({ status: fc.constant(StatusCodes.OK), text: fc.constant(_.DepositionC.encode(deposition)) }),
+          ),
+        ),
+    ])('when the deposition can be decoded', async (zenodoApiKey, id, [deposition, response]) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getDeposition(id)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.success(deposition))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.integer(),
+      fc.response({
+        status: fc.constant(StatusCodes.OK),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, id, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getDeposition(id)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(expect.anything()))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.integer(),
+      fc.response({ status: fc.integer().filter(status => status !== StatusCodes.OK) }),
+    ])('when the response has a non-200 status code', async (zenodoApiKey, id, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.getDeposition(id)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.integer(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, id, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
+
+        const actual = await _.getDeposition(id)({ fetch, zenodoApiKey })()
+
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
+  })
+
   describe('createDeposition', () => {
     test.prop([fc.url(), fc.string(), fc.zenodoDepositMetadata(), fc.response()])(
       'with a Zenodo URL',
