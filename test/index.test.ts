@@ -782,4 +782,18 @@ describe('codecs', () => {
       expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
     })
   })
+
+  describe('DepositionC', () => {
+    test.prop([fc.zenodoDeposition()])('when the deposition can be decoded', deposition => {
+      const actual = pipe(deposition, _.DepositionC.encode, _.DepositionC.decode)
+
+      expect(actual).toStrictEqual(D.success(deposition))
+    })
+
+    test.prop([fc.string()])('when the deposition cannot be decoded', string => {
+      const actual = _.DepositionC.decode(string)
+
+      expect(actual).toStrictEqual(E.left(expect.anything()))
+    })
+  })
 })

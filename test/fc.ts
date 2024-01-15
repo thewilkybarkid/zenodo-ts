@@ -327,6 +327,9 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
     )
     .map(metadatas => merge.withOptions({ mergeArrays: false }, ...metadatas))
 
+export const zenodoDeposition = (): fc.Arbitrary<_.Deposition> =>
+  fc.oneof(zenodoEmptyDeposition(), zenodoSubmittedDeposition(), zenodoUnsubmittedDeposition())
+
 export const zenodoEmptyDeposition = (): fc.Arbitrary<_.EmptyDeposition> =>
   fc.record({
     id: fc.integer(),

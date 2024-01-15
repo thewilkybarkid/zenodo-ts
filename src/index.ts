@@ -193,6 +193,12 @@ export type DepositMetadata = {
 
 /**
  * @category model
+ * @since 0.1.17
+ */
+export type Deposition = EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition
+
+/**
+ * @category model
  * @since 0.1.10
  */
 export type EmptyDeposition = {
@@ -833,6 +839,22 @@ export const UnsubmittedDepositionC: Codec<string, string, UnsubmittedDeposition
   ),
 )
 
+/**
+ * @category codecs
+ * @since 0.1.17
+ */
+export const DepositionC: Codec<string, string, Deposition> =
+  // Unfortunately, there's no way to describe a union encoder, so we must implement it ourselves.
+  // Refs https://github.com/gcanti/io-ts/issues/625#issuecomment-1007478009
+  C.make(D.union(SubmittedDepositionC, UnsubmittedDepositionC, EmptyDepositionC), {
+    encode: deposition =>
+      isSubmitted(deposition)
+        ? SubmittedDepositionC.encode(deposition)
+        : isEmpty(deposition)
+        ? EmptyDepositionC.encode(deposition)
+        : UnsubmittedDepositionC.encode(deposition),
+  })
+
 // -------------------------------------------------------------------------------------
 // utils
 // -------------------------------------------------------------------------------------
@@ -844,3 +866,8 @@ const addAuthorizationHeader = (request: F.Request) =>
   R.asks(({ zenodoApiKey }: ZenodoEnv) =>
     pipe(request, typeof zenodoApiKey === 'string' ? F.setHeader('Authorization', `Bearer ${zenodoApiKey}`) : identity),
   )
+
+const isSubmitted = (deposition: Deposition): deposition is SubmittedDeposition => deposition.submitted
+
+const isEmpty = (deposition: Deposition): deposition is EmptyDeposition =>
+  !deposition.submitted && !('title' in deposition.metadata)

@@ -13,6 +13,7 @@ Added in v0.1.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [codecs](#codecs)
+  - [DepositionC](#depositionc)
   - [EmptyDepositionC](#emptydepositionc)
   - [RecordC](#recordc)
   - [RecordsC](#recordsc)
@@ -29,6 +30,7 @@ Added in v0.1.0
   - [uploadFile](#uploadfile)
 - [model](#model)
   - [DepositMetadata (type alias)](#depositmetadata-type-alias)
+  - [Deposition (type alias)](#deposition-type-alias)
   - [EmptyDeposition (type alias)](#emptydeposition-type-alias)
   - [Record (type alias)](#record-type-alias)
   - [Records (type alias)](#records-type-alias)
@@ -40,6 +42,16 @@ Added in v0.1.0
 ---
 
 # codecs
+
+## DepositionC
+
+**Signature**
+
+```ts
+export declare const DepositionC: C.Codec<string, string, Deposition>
+```
+
+Added in v0.1.17
 
 ## EmptyDepositionC
 
@@ -269,6 +281,16 @@ export type DepositMetadata = {
 ```
 
 Added in v0.1.2
+
+## Deposition (type alias)
+
+**Signature**
+
+```ts
+export type Deposition = EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition
+```
+
+Added in v0.1.17
 
 ## EmptyDeposition (type alias)
 

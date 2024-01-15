@@ -11,6 +11,7 @@ import * as _ from '../src'
 
 import Codec = C.Codec
 import DepositMetadata = _.DepositMetadata
+import Deposition = _.Deposition
 import EmptyDeposition = _.EmptyDeposition
 import Record = _.Record
 import Records = _.Records
@@ -26,6 +27,7 @@ declare const query: URLSearchParams
 declare const record: Record
 declare const records: Records
 declare const depositMetadata: DepositMetadata
+declare const deposition: Deposition
 declare const emptyDeposition: EmptyDeposition
 declare const submittedDeposition: SubmittedDeposition
 declare const unsubmittedDeposition: UnsubmittedDeposition
@@ -70,6 +72,12 @@ expectTypeOf(depositMetadata.related_identifiers).toEqualTypeOf<
   NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined
 >()
 expectTypeOf(depositMetadata.title).toEqualTypeOf<string>()
+
+//
+// Deposition
+//
+
+expectTypeOf(deposition).toEqualTypeOf<EmptyDeposition | SubmittedDeposition | UnsubmittedDeposition>()
 
 //
 // SubmittedDeposition
