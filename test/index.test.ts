@@ -79,7 +79,7 @@ describe('constructors', () => {
 
       const actual = await _.getRecord(id)({ fetch })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([fc.integer(), fc.response({ status: fc.integer().filter(status => status !== StatusCodes.OK) })])(
@@ -175,7 +175,7 @@ describe('constructors', () => {
 
       const actual = await _.getRecords(query)({ fetch })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -282,7 +282,7 @@ describe('constructors', () => {
 
       const actual = await _.getCommunityRecords(community)(query)({ fetch })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -467,7 +467,7 @@ describe('constructors', () => {
 
       const actual = await _.createDeposition(metadata)({ fetch, zenodoApiKey })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -563,7 +563,7 @@ describe('constructors', () => {
 
       const actual = await _.createEmptyDeposition()({ fetch, zenodoApiKey })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -633,7 +633,7 @@ describe('constructors', () => {
 
       const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -762,7 +762,7 @@ describe('constructors', () => {
 
       const actual = await _.publishDeposition(deposition)({ fetch, zenodoApiKey })()
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
 
     test.prop([
@@ -804,7 +804,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the record cannot be decoded', string => {
       const actual = _.RecordC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
@@ -818,7 +818,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the records cannot be decoded', string => {
       const actual = _.RecordsC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
@@ -832,7 +832,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the empty deposition cannot be decoded', string => {
       const actual = _.EmptyDepositionC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
@@ -849,7 +849,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the in-progress deposition cannot be decoded', string => {
       const actual = _.InProgressDepositionC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
@@ -863,7 +863,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the submitted deposition cannot be decoded', string => {
       const actual = _.SubmittedDepositionC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
@@ -880,7 +880,7 @@ describe('codecs', () => {
     test.prop([fc.string()])('when the unsubmitted deposition cannot be decoded', string => {
       const actual = _.UnsubmittedDepositionC.decode(string)
 
-      expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
+      expect(actual).toStrictEqual(E.left(expect.anything()))
     })
   })
 
