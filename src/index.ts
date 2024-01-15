@@ -224,6 +224,7 @@ export type InProgressDeposition = {
   id: number
   links: {
     publish: URL
+    self: URL
   }
   metadata: DepositMetadata & {
     doi: Doi
@@ -409,13 +410,18 @@ export const createDeposition: (
  * @category constructors
  * @since 0.1.10
  */
-export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
-  metadata: DepositMetadata,
-  deposition: T,
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition> = (
-  metadata,
-  deposition,
-) =>
+export const updateDeposition: {
+  (metadata: DepositMetadata, deposition: InProgressDeposition): ReaderTaskEither<
+    ZenodoAuthenticatedEnv,
+    Error | DecodeError | Response,
+    InProgressDeposition
+  >
+  <T extends EmptyDeposition | UnsubmittedDeposition>(metadata: DepositMetadata, deposition: T): ReaderTaskEither<
+    ZenodoAuthenticatedEnv,
+    Error | DecodeError | Response,
+    UnsubmittedDeposition
+  >
+} = (metadata: DepositMetadata, deposition: EmptyDeposition | InProgressDeposition | UnsubmittedDeposition) =>
   pipe(
     F.Request('PUT')(deposition.links.self),
     F.setHeader('Accept', 'application/json'),
@@ -423,8 +429,8 @@ export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDepositio
     RTE.fromReaderK(addAuthorizationHeader),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.OK), identity),
-    RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
-  )
+    RTE.chainTaskEitherKW(F.decode(DepositionC)),
+  ) as never
 
 /**
  * @category constructors
@@ -831,6 +837,7 @@ export const InProgressDepositionC: Codec<string, string, InProgressDeposition> 
       id: C.number,
       links: C.struct({
         publish: UrlC,
+        self: UrlC,
       }),
       metadata: pipe(
         DepositMetadataC,

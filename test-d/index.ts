@@ -187,6 +187,9 @@ expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
 expectTypeOf(_.updateDeposition(depositMetadata, emptyDeposition)).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 >()
+expectTypeOf(_.updateDeposition(depositMetadata, inProgressDeposition)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, InProgressDeposition>
+>()
 expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
 >()

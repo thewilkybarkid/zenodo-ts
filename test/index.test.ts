@@ -590,33 +590,65 @@ describe('constructors', () => {
   })
 
   describe('updateDeposition', () => {
-    test.prop([
-      fc.string(),
-      fc.zenodoDepositMetadata(),
-      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
-      fc.zenodoUnsubmittedDeposition().chain(unsubmittedDeposition =>
-        fc.tuple(
-          fc.constant(unsubmittedDeposition),
-          fc.response({
-            status: fc.constant(StatusCodes.OK),
-            text: fc.constant(_.UnsubmittedDepositionC.encode(unsubmittedDeposition)),
-          }),
+    describe('when the deposition can be decoded', () => {
+      test.prop([
+        fc.string(),
+        fc.zenodoDepositMetadata(),
+        fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
+        fc.zenodoUnsubmittedDeposition().chain(unsubmittedDeposition =>
+          fc.tuple(
+            fc.constant(unsubmittedDeposition),
+            fc.response({
+              status: fc.constant(StatusCodes.OK),
+              text: fc.constant(_.UnsubmittedDepositionC.encode(unsubmittedDeposition)),
+            }),
+          ),
         ),
-      ),
-    ])('when the deposition can be decoded', async (zenodoApiKey, metadata, deposition, [expected, response]) => {
-      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+      ])('with a new deposition', async (zenodoApiKey, metadata, deposition, [expected, response]) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-      const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+        const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
 
-      expect(actual).toStrictEqual(D.success(expected))
-      expect(fetch).toHaveBeenCalledWith(deposition.links.self.href, {
-        body: expect.anything(),
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${zenodoApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'PUT',
+        expect(actual).toStrictEqual(D.success(expected))
+        expect(fetch).toHaveBeenCalledWith(deposition.links.self.href, {
+          body: expect.anything(),
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        })
+      })
+
+      test.prop([
+        fc.string(),
+        fc.zenodoDepositMetadata(),
+        fc.zenodoInProgressDeposition(),
+        fc.zenodoInProgressDeposition().chain(inProgressDeposition =>
+          fc.tuple(
+            fc.constant(inProgressDeposition),
+            fc.response({
+              status: fc.constant(StatusCodes.OK),
+              text: fc.constant(_.InProgressDepositionC.encode(inProgressDeposition)),
+            }),
+          ),
+        ),
+      ])('with an in-progress deposition', async (zenodoApiKey, metadata, deposition, [expected, response]) => {
+        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+        const actual = await _.updateDeposition(metadata, deposition)({ fetch, zenodoApiKey })()
+
+        expect(actual).toStrictEqual(D.success(expected))
+        expect(fetch).toHaveBeenCalledWith(deposition.links.self.href, {
+          body: expect.anything(),
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${zenodoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        })
       })
     })
 

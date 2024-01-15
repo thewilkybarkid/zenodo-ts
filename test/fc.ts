@@ -356,6 +356,7 @@ export const zenodoInProgressDeposition = (): fc.Arbitrary<_.InProgressDepositio
     id: fc.integer(),
     links: fc.record({
       publish: url(),
+      self: url(),
     }),
     metadata: fc
       .tuple(

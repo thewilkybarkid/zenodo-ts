@@ -207,10 +207,18 @@ Added in v0.1.3
 **Signature**
 
 ```ts
-export declare const updateDeposition: <T extends EmptyDeposition | UnsubmittedDeposition>(
-  metadata: DepositMetadata,
-  deposition: T
-) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, UnsubmittedDeposition>
+export declare const updateDeposition: {
+  (metadata: DepositMetadata, deposition: InProgressDeposition): ReaderTaskEither<
+    ZenodoAuthenticatedEnv,
+    Error | DecodeError | Response,
+    InProgressDeposition
+  >
+  <T extends EmptyDeposition | UnsubmittedDeposition>(metadata: DepositMetadata, deposition: T): ReaderTaskEither<
+    ZenodoAuthenticatedEnv,
+    Error | DecodeError | Response,
+    UnsubmittedDeposition
+  >
+}
 ```
 
 Added in v0.1.10
@@ -349,6 +357,7 @@ export type InProgressDeposition = {
   id: number
   links: {
     publish: URL
+    self: URL
   }
   metadata: DepositMetadata & {
     doi: Doi
