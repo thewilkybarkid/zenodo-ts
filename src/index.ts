@@ -139,6 +139,7 @@ export type DepositMetadata = {
   }>
   description: string
   keywords?: NonEmptyArray<string>
+  publication_date?: Date
   related_identifiers?: NonEmptyArray<{
     scheme: string
     identifier: string
@@ -717,6 +718,7 @@ const DepositMetadataC = pipe(
         ),
       ),
       keywords: NonEmptyArrayC(C.string),
+      publication_date: PlainDateC,
       related_identifiers: NonEmptyArrayC(
         pipe(
           C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
