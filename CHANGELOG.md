@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.16](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.15...v0.1.16) (2024-01-15)
+
+
+### Features
+
+* add imprint publisher to DepositMetadata ([a43a7b9](https://github.com/thewilkybarkid/zenodo-ts/commit/a43a7b93783eb87d767107d1eb0e86c108444e1d))
+* add license to DepositMetadata ([058926d](https://github.com/thewilkybarkid/zenodo-ts/commit/058926dae7525a963b56e0be319e690d7ce57853))
+* add publication date to DepositMetadata ([9df7a4a](https://github.com/thewilkybarkid/zenodo-ts/commit/9df7a4a560f9361b99dcf5aca29ba610b97070c2))
+* search for records in a community ([0ae8ff3](https://github.com/thewilkybarkid/zenodo-ts/commit/0ae8ff33b0f7bfce920dc6c8f0be0eab694f7757))
+
+
+### Bug Fixes
+
+* don't fail on an empty list of contributors ([347e705](https://github.com/thewilkybarkid/zenodo-ts/commit/347e705cc7889f1d9e510fe02f930defda67bd3e))
+* match API breaking change ([5015e21](https://github.com/thewilkybarkid/zenodo-ts/commit/5015e214805a90678b6dda78bbee680b2f5c1b50))
+* update records API path ([9bbada6](https://github.com/thewilkybarkid/zenodo-ts/commit/9bbada6cb891aead9fe4b919a2b1c144eb85e14b))
+
 ### [0.1.15](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.14...v0.1.15) (2023-10-13)
 
 
