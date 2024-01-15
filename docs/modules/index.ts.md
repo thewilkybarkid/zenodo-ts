@@ -42,6 +42,11 @@ Added in v0.1.0
   - [UnsubmittedDeposition (type alias)](#unsubmitteddeposition-type-alias)
   - [ZenodoAuthenticatedEnv (interface)](#zenodoauthenticatedenv-interface)
   - [ZenodoEnv (interface)](#zenodoenv-interface)
+- [refinements](#refinements)
+  - [depositionIsEmpty](#depositionisempty)
+  - [depositionIsInProgress](#depositionisinprogress)
+  - [depositionIsSubmitted](#depositionissubmitted)
+  - [depositionIsUnsubmitted](#depositionisunsubmitted)
 
 ---
 
@@ -563,3 +568,45 @@ export interface ZenodoEnv extends FetchEnv {
 ```
 
 Added in v0.1.1
+
+# refinements
+
+## depositionIsEmpty
+
+**Signature**
+
+```ts
+export declare const depositionIsEmpty: Refinement<Deposition, EmptyDeposition>
+```
+
+Added in v0.1.17
+
+## depositionIsInProgress
+
+**Signature**
+
+```ts
+export declare const depositionIsInProgress: Refinement<Deposition, InProgressDeposition>
+```
+
+Added in v0.1.17
+
+## depositionIsSubmitted
+
+**Signature**
+
+```ts
+export declare const depositionIsSubmitted: Refinement<Deposition, SubmittedDeposition>
+```
+
+Added in v0.1.17
+
+## depositionIsUnsubmitted
+
+**Signature**
+
+```ts
+export declare const depositionIsUnsubmitted: Refinement<Deposition, UnsubmittedDeposition>
+```
+
+Added in v0.1.17

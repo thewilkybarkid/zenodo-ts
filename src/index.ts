@@ -10,6 +10,7 @@ import * as NEA from 'fp-ts/NonEmptyArray'
 import * as O from 'fp-ts/Option'
 import * as R from 'fp-ts/Reader'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { Refinement } from 'fp-ts/Refinement'
 import { constVoid, flow, identity, pipe } from 'fp-ts/function'
 import { StatusCodes } from 'http-status-codes'
 import * as C from 'io-ts/Codec'
@@ -488,6 +489,42 @@ export const publishDeposition: (
   )
 
 // -------------------------------------------------------------------------------------
+// refinements
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category refinements
+ * @since 0.1.17
+ */
+export const depositionIsInProgress: Refinement<Deposition, InProgressDeposition> = (
+  deposition: Deposition,
+): deposition is InProgressDeposition => deposition.submitted && deposition.state === 'inprogress'
+
+/**
+ * @category refinements
+ * @since 0.1.17
+ */
+export const depositionIsSubmitted: Refinement<Deposition, SubmittedDeposition> = (
+  deposition: Deposition,
+): deposition is SubmittedDeposition => deposition.submitted && deposition.state === 'done'
+
+/**
+ * @category refinements
+ * @since 0.1.17
+ */
+export const depositionIsEmpty: Refinement<Deposition, EmptyDeposition> = (
+  deposition: Deposition,
+): deposition is EmptyDeposition => !deposition.submitted && !('title' in deposition.metadata)
+
+/**
+ * @category refinements
+ * @since 0.1.17
+ */
+export const depositionIsUnsubmitted: Refinement<Deposition, UnsubmittedDeposition> = (
+  deposition: Deposition,
+): deposition is UnsubmittedDeposition => !deposition.submitted && 'title' in deposition.metadata
+
+// -------------------------------------------------------------------------------------
 // codecs
 // -------------------------------------------------------------------------------------
 
@@ -940,11 +977,11 @@ export const DepositionC: Codec<string, string, Deposition> =
   // Refs https://github.com/gcanti/io-ts/issues/625#issuecomment-1007478009
   C.make(D.union(SubmittedDepositionC, InProgressDepositionC, UnsubmittedDepositionC, EmptyDepositionC), {
     encode: deposition =>
-      isSubmitted(deposition)
+      depositionIsSubmitted(deposition)
         ? SubmittedDepositionC.encode(deposition)
-        : isInProgress(deposition)
+        : depositionIsInProgress(deposition)
         ? InProgressDepositionC.encode(deposition)
-        : isEmpty(deposition)
+        : depositionIsEmpty(deposition)
         ? EmptyDepositionC.encode(deposition)
         : UnsubmittedDepositionC.encode(deposition),
   })
@@ -960,12 +997,3 @@ const addAuthorizationHeader = (request: F.Request) =>
   R.asks(({ zenodoApiKey }: ZenodoEnv) =>
     pipe(request, typeof zenodoApiKey === 'string' ? F.setHeader('Authorization', `Bearer ${zenodoApiKey}`) : identity),
   )
-
-const isSubmitted = (deposition: Deposition): deposition is SubmittedDeposition =>
-  deposition.submitted && deposition.state === 'done'
-
-const isInProgress = (deposition: Deposition): deposition is InProgressDeposition =>
-  deposition.submitted && deposition.state === 'inprogress'
-
-const isEmpty = (deposition: Deposition): deposition is EmptyDeposition =>
-  !deposition.submitted && !('title' in deposition.metadata)

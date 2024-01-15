@@ -895,6 +895,58 @@ describe('constructors', () => {
   })
 })
 
+describe('refinements', () => {
+  describe('depositionIsInProgress', () => {
+    test.prop([fc.zenodoInProgressDeposition()])('when an in-progress deposition', deposition => {
+      expect(_.depositionIsInProgress(deposition)).toBeTruthy()
+    })
+
+    test.prop([fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoSubmittedDeposition(), fc.zenodoUnsubmittedDeposition())])(
+      'when a non-in-progress deposition',
+      deposition => {
+        expect(_.depositionIsInProgress(deposition)).toBeFalsy()
+      },
+    )
+  })
+
+  describe('depositionIsEmpty', () => {
+    test.prop([fc.zenodoEmptyDeposition()])('when an empty deposition', deposition => {
+      expect(_.depositionIsEmpty(deposition)).toBeTruthy()
+    })
+
+    test.prop([
+      fc.oneof(fc.zenodoInProgressDeposition(), fc.zenodoSubmittedDeposition(), fc.zenodoUnsubmittedDeposition()),
+    ])('when a non-empty deposition', deposition => {
+      expect(_.depositionIsEmpty(deposition)).toBeFalsy()
+    })
+  })
+
+  describe('depositionIsSubmitted', () => {
+    test.prop([fc.zenodoSubmittedDeposition()])('when an submitted deposition', deposition => {
+      expect(_.depositionIsSubmitted(deposition)).toBeTruthy()
+    })
+
+    test.prop([
+      fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoInProgressDeposition(), fc.zenodoUnsubmittedDeposition()),
+    ])('when a non-submitted deposition', deposition => {
+      expect(_.depositionIsSubmitted(deposition)).toBeFalsy()
+    })
+  })
+
+  describe('depositionIsUnsubmitted', () => {
+    test.prop([fc.zenodoUnsubmittedDeposition()])('when an unsubmitted deposition', deposition => {
+      expect(_.depositionIsUnsubmitted(deposition)).toBeTruthy()
+    })
+
+    test.prop([fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoInProgressDeposition(), fc.zenodoSubmittedDeposition())])(
+      'when a non-unsubmitted deposition',
+      deposition => {
+        expect(_.depositionIsUnsubmitted(deposition)).toBeFalsy()
+      },
+    )
+  })
+})
+
 describe('codecs', () => {
   describe('RecordC', () => {
     test.prop([fc.zenodoRecord()])('when the record can be decoded', record => {
