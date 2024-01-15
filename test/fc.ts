@@ -376,6 +376,9 @@ export const zenodoInProgressDeposition = (): fc.Arbitrary<_.InProgressDepositio
 export const zenodoSubmittedDeposition = (): fc.Arbitrary<_.SubmittedDeposition> =>
   fc.record({
     id: fc.integer(),
+    links: fc.record({
+      edit: url(),
+    }),
     metadata: fc
       .tuple(
         zenodoDepositMetadata(),

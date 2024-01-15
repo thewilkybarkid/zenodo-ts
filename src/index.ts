@@ -242,6 +242,9 @@ export type InProgressDeposition = {
  */
 export type SubmittedDeposition = {
   id: number
+  links: {
+    edit: URL
+  }
   metadata: DepositMetadata & {
     doi: Doi
   }
@@ -404,6 +407,22 @@ export const createDeposition: (
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
     RTE.chainTaskEitherKW(F.decode(UnsubmittedDepositionC)),
+  )
+
+/**
+ * @category constructors
+ * @since 0.1.17
+ */
+export const unlockDeposition: (
+  deposition: SubmittedDeposition,
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, InProgressDeposition> = deposition =>
+  pipe(
+    F.Request('POST')(deposition.links.edit),
+    F.setHeader('Accept', 'application/json'),
+    RTE.fromReaderK(addAuthorizationHeader),
+    RTE.chainW(F.send),
+    RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED), identity),
+    RTE.chainTaskEitherKW(F.decode(InProgressDepositionC)),
   )
 
 /**
@@ -865,6 +884,9 @@ export const SubmittedDepositionC: Codec<string, string, SubmittedDeposition> = 
   C.compose(
     C.struct({
       id: C.number,
+      links: C.struct({
+        edit: UrlC,
+      }),
       metadata: pipe(
         DepositMetadataC,
         C.intersect(

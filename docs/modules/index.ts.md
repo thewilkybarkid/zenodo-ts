@@ -28,6 +28,7 @@ Added in v0.1.0
   - [getRecord](#getrecord)
   - [getRecords](#getrecords)
   - [publishDeposition](#publishdeposition)
+  - [unlockDeposition](#unlockdeposition)
   - [updateDeposition](#updatedeposition)
   - [uploadFile](#uploadfile)
 - [model](#model)
@@ -201,6 +202,18 @@ export declare const publishDeposition: (
 ```
 
 Added in v0.1.3
+
+## unlockDeposition
+
+**Signature**
+
+```ts
+export declare const unlockDeposition: (
+  deposition: SubmittedDeposition
+) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, InProgressDeposition>
+```
+
+Added in v0.1.17
 
 ## updateDeposition
 
@@ -489,6 +502,9 @@ Added in v0.1.1
 ```ts
 export type SubmittedDeposition = {
   id: number
+  links: {
+    edit: URL
+  }
   metadata: DepositMetadata & {
     doi: Doi
   }

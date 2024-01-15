@@ -181,6 +181,14 @@ expectTypeOf(_.createDeposition(depositMetadata)).toMatchTypeOf<
 >()
 
 //
+// unlockDeposition
+//
+
+expectTypeOf(_.unlockDeposition(submittedDeposition)).toMatchTypeOf<
+  ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, InProgressDeposition>
+>()
+
+//
 // updateDeposition
 //
 

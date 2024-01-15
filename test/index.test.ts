@@ -589,6 +589,76 @@ describe('constructors', () => {
     })
   })
 
+  describe('unlockDeposition', () => {
+    test.prop([
+      fc.string(),
+      fc.zenodoSubmittedDeposition(),
+      fc.zenodoInProgressDeposition().chain(deposition =>
+        fc.tuple(
+          fc.constant(deposition),
+          fc.response({
+            status: fc.constant(StatusCodes.CREATED),
+            text: fc.constant(_.InProgressDepositionC.encode(deposition)),
+          }),
+        ),
+      ),
+    ])('when the deposition can be decoded', async (zenodoApiKey, deposition, [expected, response]) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+
+      const actual = await _.unlockDeposition(deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(D.success(expected))
+      expect(fetch).toHaveBeenCalledWith(deposition.links.edit.href, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${zenodoApiKey}`,
+        },
+        method: 'POST',
+      })
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoSubmittedDeposition(),
+      fc.response({
+        status: fc.constant(StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, deposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.unlockDeposition(deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(expect.anything()))
+    })
+
+    test.prop([
+      fc.string(),
+      fc.zenodoSubmittedDeposition(),
+      fc.response({
+        status: fc.integer().filter(status => status !== StatusCodes.CREATED),
+        text: fc.string(),
+      }),
+    ])('when the response has a non-201 status code', async (zenodoApiKey, deposition, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
+
+      const actual = await _.unlockDeposition(deposition)({ fetch, zenodoApiKey })()
+
+      expect(actual).toStrictEqual(E.left(response))
+    })
+
+    test.prop([fc.string(), fc.zenodoSubmittedDeposition(), fc.error()])(
+      'when fetch throws an error',
+      async (zenodoApiKey, deposition, error) => {
+        const fetch: Fetch = () => Promise.reject(error)
+
+        const actual = await _.unlockDeposition(deposition)({ fetch, zenodoApiKey })()
+
+        expect(actual).toStrictEqual(E.left(error))
+      },
+    )
+  })
+
   describe('updateDeposition', () => {
     describe('when the deposition can be decoded', () => {
       test.prop([
