@@ -122,6 +122,7 @@ expectTypeOf(emptyDeposition.submitted).toEqualTypeOf<false>()
 //
 
 expectTypeOf(inProgressDeposition.id).toEqualTypeOf<number>()
+expectTypeOf(inProgressDeposition.links.publish).toEqualTypeOf<URL>()
 expectTypeOf(inProgressDeposition.metadata).toMatchTypeOf<DepositMetadata>()
 expectTypeOf(inProgressDeposition.metadata.doi).toEqualTypeOf<Doi>()
 expectTypeOf(inProgressDeposition.metadata.prereserve_doi.doi).toEqualTypeOf<Doi>()

@@ -222,6 +222,9 @@ export type EmptyDeposition = {
  */
 export type InProgressDeposition = {
   id: number
+  links: {
+    publish: URL
+  }
   metadata: DepositMetadata & {
     doi: Doi
     prereserve_doi: {
@@ -448,7 +451,7 @@ export const uploadFile: (upload: {
  * @since 0.1.3
  */
 export const publishDeposition: (
-  deposition: UnsubmittedDeposition,
+  deposition: InProgressDeposition | UnsubmittedDeposition,
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition> = deposition =>
   pipe(
     F.Request('POST')(deposition.links.publish),
@@ -826,6 +829,9 @@ export const InProgressDepositionC: Codec<string, string, InProgressDeposition> 
   C.compose(
     C.struct({
       id: C.number,
+      links: C.struct({
+        publish: UrlC,
+      }),
       metadata: pipe(
         DepositMetadataC,
         C.intersect(

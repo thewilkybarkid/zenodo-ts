@@ -725,7 +725,7 @@ describe('constructors', () => {
   describe('publishDeposition', () => {
     test.prop([
       fc.string(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoInProgressDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.zenodoSubmittedDeposition().chain(submittedDeposition =>
         fc.tuple(
           fc.constant(submittedDeposition),
@@ -735,60 +735,57 @@ describe('constructors', () => {
           }),
         ),
       ),
-    ])(
-      'when the deposition can be decoded',
-      async (zenodoApiKey, unsubmittedDeposition, [submittedDeposition, response]) => {
-        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+    ])('when the deposition can be decoded', async (zenodoApiKey, deposition, [submittedDeposition, response]) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-        const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+      const actual = await _.publishDeposition(deposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(D.success(submittedDeposition))
-        expect(fetch).toHaveBeenCalledWith(unsubmittedDeposition.links.publish.href, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${zenodoApiKey}`,
-          },
-          method: 'POST',
-        })
-      },
-    )
+      expect(actual).toStrictEqual(D.success(submittedDeposition))
+      expect(fetch).toHaveBeenCalledWith(deposition.links.publish.href, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${zenodoApiKey}`,
+        },
+        method: 'POST',
+      })
+    })
 
     test.prop([
       fc.string(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoInProgressDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.response({
         status: fc.constant(StatusCodes.ACCEPTED),
         text: fc.string(),
       }),
-    ])('when the deposition cannot be decoded', async (zenodoApiKey, unsubmittedDeposition, response) => {
+    ])('when the deposition cannot be decoded', async (zenodoApiKey, deposition, response) => {
       const fetch: Fetch = () => Promise.resolve(response)
 
-      const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+      const actual = await _.publishDeposition(deposition)({ fetch, zenodoApiKey })()
 
       expect(actual).toStrictEqual(D.failure(expect.anything(), expect.anything() as never))
     })
 
     test.prop([
       fc.string(),
-      fc.zenodoUnsubmittedDeposition(),
+      fc.oneof(fc.zenodoInProgressDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.response({
         status: fc.integer().filter(status => status !== StatusCodes.ACCEPTED),
         text: fc.string(),
       }),
-    ])('when the response has a non-202 status code', async (zenodoApiKey, unsubmittedDeposition, response) => {
+    ])('when the response has a non-202 status code', async (zenodoApiKey, deposition, response) => {
       const fetch: Fetch = () => Promise.resolve(response)
 
-      const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+      const actual = await _.publishDeposition(deposition)({ fetch, zenodoApiKey })()
 
       expect(actual).toStrictEqual(E.left(response))
     })
 
-    test.prop([fc.string(), fc.zenodoUnsubmittedDeposition(), fc.error()])(
+    test.prop([fc.string(), fc.oneof(fc.zenodoInProgressDeposition(), fc.zenodoUnsubmittedDeposition()), fc.error()])(
       'when fetch throws an error',
-      async (zenodoApiKey, unsubmittedDeposition, error) => {
+      async (zenodoApiKey, deposition, error) => {
         const fetch: Fetch = () => Promise.reject(error)
 
-        const actual = await _.publishDeposition(unsubmittedDeposition)({ fetch, zenodoApiKey })()
+        const actual = await _.publishDeposition(deposition)({ fetch, zenodoApiKey })()
 
         expect(actual).toStrictEqual(E.left(error))
       },

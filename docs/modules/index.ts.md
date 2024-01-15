@@ -196,7 +196,7 @@ Added in v0.1.1
 
 ```ts
 export declare const publishDeposition: (
-  deposition: UnsubmittedDeposition
+  deposition: InProgressDeposition | UnsubmittedDeposition
 ) => ReaderTaskEither<ZenodoAuthenticatedEnv, Error | DecodeError | Response, SubmittedDeposition>
 ```
 
@@ -347,6 +347,9 @@ Added in v0.1.10
 ```ts
 export type InProgressDeposition = {
   id: number
+  links: {
+    publish: URL
+  }
   metadata: DepositMetadata & {
     doi: Doi
     prereserve_doi: {
