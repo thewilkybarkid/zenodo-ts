@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.16...v0.1.17) (2024-01-15)
+
+
+### Features
+
+* add an overall Deposition type ([1a30db0](https://github.com/thewilkybarkid/zenodo-ts/commit/1a30db0677d153708285dff9173c65fc9b90eff4))
+* allow editing of published depositions ([08c177e](https://github.com/thewilkybarkid/zenodo-ts/commit/08c177eee86007df2264b068f0e22e0e5339170f))
+* allow in-progress depositions to be published ([8b548e5](https://github.com/thewilkybarkid/zenodo-ts/commit/8b548e5c76ef021faf0fb5dcccf3c58fe127904f))
+* allow in-progress depositions to be updated ([23643e9](https://github.com/thewilkybarkid/zenodo-ts/commit/23643e912c9f7b40386809966f56979021fa0850))
+* distinguish between deposition types ([53aabe4](https://github.com/thewilkybarkid/zenodo-ts/commit/53aabe4860dce73d0e5bf9551457279de3dd67b2))
+* get a deposition ([6a06ab7](https://github.com/thewilkybarkid/zenodo-ts/commit/6a06ab78517b1093f6583a3a0373a87b1a03d887))
+
+
+### Bug Fixes
+
+* support in-progress depositions ([36dbb70](https://github.com/thewilkybarkid/zenodo-ts/commit/36dbb706448aadead518c2c048c43d91643fceba))
+
 ### [0.1.16](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.15...v0.1.16) (2024-01-15)
 
 
