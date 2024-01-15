@@ -215,6 +215,7 @@ export type DepositMetadata = {
   }>
   description: string
   keywords?: NonEmptyArray<string>
+  license?: string
   publication_date?: Date
   related_identifiers?: NonEmptyArray<{
     scheme: string
