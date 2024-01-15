@@ -70,7 +70,6 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 self: url(),
               }),
               size: fc.integer(),
-              type: fc.string(),
             }),
             { minLength: 1 },
           )

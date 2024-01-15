@@ -42,7 +42,6 @@ export type Record = {
       self: URL
     }
     size: number
-    type: string
   }>
   id: number
   links: {
@@ -390,7 +389,6 @@ export const updateDeposition: <T extends EmptyDeposition | UnsubmittedDepositio
  */
 export const uploadFile: (upload: {
   readonly name: string
-  readonly type: string
   readonly content: string
 }) => <T extends EmptyDeposition | UnsubmittedDeposition>(
   deposition: T,
@@ -398,7 +396,7 @@ export const uploadFile: (upload: {
   flow(
     deposition => `${deposition.links.bucket.toString()}/${upload.name}`,
     F.Request('PUT'),
-    F.setBody(upload.content, upload.type),
+    F.setBody(upload.content, 'application/octet-stream'),
     RTE.fromReaderK(addAuthorizationHeader),
     RTE.chainW(F.send),
     RTE.filterOrElseW(F.hasStatus(StatusCodes.CREATED, StatusCodes.OK), identity),
@@ -614,7 +612,6 @@ const BaseRecordC = C.struct({
         self: UrlC,
       }),
       size: C.number,
-      type: C.string,
     }),
   ),
   links: C.struct({

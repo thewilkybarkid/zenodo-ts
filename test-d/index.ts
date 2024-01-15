@@ -39,7 +39,6 @@ declare const zenodoEnv: ZenodoEnv
 expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
 expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()
 expectTypeOf(record.files[0].size).toEqualTypeOf<number>()
-expectTypeOf(record.files[0].type).toEqualTypeOf<string>()
 expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.links.latest).toEqualTypeOf<URL>()
 expectTypeOf(record.links.latest_html).toEqualTypeOf<URL>()
@@ -161,10 +160,10 @@ expectTypeOf(_.updateDeposition(depositMetadata, unsubmittedDeposition)).toMatch
 // uploadFile
 //
 
-expectTypeOf(pipe(emptyDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
+expectTypeOf(pipe(emptyDeposition, _.uploadFile({ name: string, content: string }))).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, unknown, void>
 >()
-expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, type: string, content: string }))).toMatchTypeOf<
+expectTypeOf(pipe(unsubmittedDeposition, _.uploadFile({ name: string, content: string }))).toMatchTypeOf<
   ReaderTaskEither<ZenodoAuthenticatedEnv, Error | Response, void>
 >()
 

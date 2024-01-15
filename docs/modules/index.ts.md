@@ -185,7 +185,6 @@ Added in v0.1.10
 ```ts
 export declare const uploadFile: (upload: {
   readonly name: string
-  readonly type: string
   readonly content: string
 }) => <T extends EmptyDeposition | UnsubmittedDeposition>(
   deposition: T
@@ -305,7 +304,6 @@ export type Record = {
       self: URL
     }
     size: number
-    type: string
   }>
   id: number
   links: {

@@ -585,60 +585,51 @@ describe('constructors', () => {
       fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.string(),
       fc.string(),
-      fc.string(),
       fc.response({
         status: fc.constantFrom(StatusCodes.CREATED, StatusCodes.OK),
       }),
-    ])(
-      'when the response has a 200/201 status code',
-      async (zenodoApiKey, deposition, name, type, content, response) => {
-        const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
+    ])('when the response has a 200/201 status code', async (zenodoApiKey, deposition, name, content, response) => {
+      const fetch: jest.MockedFunction<Fetch> = jest.fn((_url, _init) => Promise.resolve(response))
 
-        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+      const actual = await _.uploadFile({ name, content })(deposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(D.success(undefined))
-        expect(fetch).toHaveBeenCalledWith(`${deposition.links.bucket.href}/${name}`, {
-          body: content,
-          headers: {
-            Authorization: `Bearer ${zenodoApiKey}`,
-            'Content-Type': type,
-          },
-          method: 'PUT',
-        })
-      },
-    )
+      expect(actual).toStrictEqual(D.success(undefined))
+      expect(fetch).toHaveBeenCalledWith(`${deposition.links.bucket.href}/${name}`, {
+        body: content,
+        headers: {
+          Authorization: `Bearer ${zenodoApiKey}`,
+          'Content-Type': 'application/octet-stream',
+        },
+        method: 'PUT',
+      })
+    })
 
     test.prop([
       fc.string(),
       fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
-      fc.string(),
       fc.string(),
       fc.string(),
       fc.response({
         status: fc.integer().filter(status => status !== StatusCodes.CREATED && status !== StatusCodes.OK),
       }),
-    ])(
-      'when the response has a non-200/201 status code',
-      async (zenodoApiKey, deposition, name, type, content, response) => {
-        const fetch: Fetch = () => Promise.resolve(response)
+    ])('when the response has a non-200/201 status code', async (zenodoApiKey, deposition, name, content, response) => {
+      const fetch: Fetch = () => Promise.resolve(response)
 
-        const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+      const actual = await _.uploadFile({ name, content })(deposition)({ fetch, zenodoApiKey })()
 
-        expect(actual).toStrictEqual(E.left(response))
-      },
-    )
+      expect(actual).toStrictEqual(E.left(response))
+    })
 
     test.prop([
       fc.string(),
       fc.oneof(fc.zenodoEmptyDeposition(), fc.zenodoUnsubmittedDeposition()),
       fc.string(),
       fc.string(),
-      fc.string(),
       fc.error(),
-    ])('when fetch throws an error', async (zenodoApiKey, deposition, name, type, content, error) => {
+    ])('when fetch throws an error', async (zenodoApiKey, deposition, name, content, error) => {
       const fetch: Fetch = () => Promise.reject(error)
 
-      const actual = await _.uploadFile({ name, type, content })(deposition)({ fetch, zenodoApiKey })()
+      const actual = await _.uploadFile({ name, content })(deposition)({ fetch, zenodoApiKey })()
 
       expect(actual).toStrictEqual(E.left(error))
     })
