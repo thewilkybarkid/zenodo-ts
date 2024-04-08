@@ -42,14 +42,19 @@ declare const zenodoEnv: ZenodoEnv
 
 expectTypeOf(record.conceptdoi).toEqualTypeOf<Doi | undefined>()
 expectTypeOf(record.conceptrecid).toEqualTypeOf<number>()
-if ('files' in record) {
+expectTypeOf(record.metadata.access_right).toEqualTypeOf<'open' | 'embargoed'>()
+if (_.isOpenRecord(record)) {
+  expectTypeOf(record.metadata.access_right).toEqualTypeOf<'open'>()
   expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
   expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()
   expectTypeOf(record.files[0].size).toEqualTypeOf<number>()
   // @ts-expect-error
   expectTypeOf(record.metadata.embargo_date).toBeUndefined()
-} else {
+} else if (_.isEmbargoedRecord(record)) {
+  expectTypeOf(record.metadata.access_right).toEqualTypeOf<'embargoed'>()
   expectTypeOf(record.metadata.embargo_date).toEqualTypeOf<Date>()
+  // @ts-expect-error
+  expectTypeOf(record.metadata.files).toBeUndefined()
 }
 expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.links.latest).toEqualTypeOf<URL>()

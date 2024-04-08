@@ -47,6 +47,9 @@ Added in v0.1.0
   - [depositionIsInProgress](#depositionisinprogress)
   - [depositionIsSubmitted](#depositionissubmitted)
   - [depositionIsUnsubmitted](#depositionisunsubmitted)
+- [utils](#utils)
+  - [isEmbargoedRecord](#isembargoedrecord)
+  - [isOpenRecord](#isopenrecord)
 
 ---
 
@@ -482,8 +485,9 @@ export type Record = {
         }
         size: number
       }>
+      metadata: { access_right: 'open' }
     }
-  | { metadata: { embargo_date: Date } }
+  | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
 )
 ```
 
@@ -614,3 +618,27 @@ export declare const depositionIsUnsubmitted: Refinement<Deposition, Unsubmitted
 ```
 
 Added in v0.1.17
+
+# utils
+
+## isEmbargoedRecord
+
+**Signature**
+
+```ts
+export declare function isEmbargoedRecord(
+  record: Record
+): record is Extract<Record, { metadata: { access_right: 'embargoed' } }>
+```
+
+Added in v0.1.19
+
+## isOpenRecord
+
+**Signature**
+
+```ts
+export declare function isOpenRecord(record: Record): record is Extract<Record, { metadata: { access_right: 'open' } }>
+```
+
+Added in v0.1.19

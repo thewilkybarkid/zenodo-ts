@@ -121,8 +121,9 @@ export type Record = {
         }
         size: number
       }>
+      metadata: { access_right: 'open' }
     }
-  | { metadata: { embargo_date: Date } }
+  | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
 )
 
 /**
@@ -811,16 +812,39 @@ const BaseRecordC = pipe(
   C.intersect(
     C.make(
       D.union(
-        C.struct({ metadata: BaseRecordMetadataC, files: NonEmptyArrayC(FileC) }),
-        C.struct({ metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ embargo_date: PlainDateC }))) }),
+        C.struct({
+          metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('open') }))),
+          files: NonEmptyArrayC(FileC),
+        }),
+        C.struct({
+          metadata: pipe(
+            BaseRecordMetadataC,
+            C.intersect(C.struct({ access_right: C.literal('embargoed'), embargo_date: PlainDateC })),
+          ),
+        }),
       ),
       {
-        encode: record =>
-          'files' in record
-            ? C.struct({ metadata: BaseRecordMetadataC, files: NonEmptyArrayC(FileC) }).encode(record)
-            : C.struct({
-                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ embargo_date: PlainDateC }))),
-              }).encode(record),
+        encode: record => {
+          switch (record.metadata.access_right) {
+            case 'open':
+              return C.struct({
+                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('open') }))),
+                files: NonEmptyArrayC(FileC),
+              }).encode(record as never)
+            case 'embargoed':
+              return C.struct({
+                metadata: pipe(
+                  BaseRecordMetadataC,
+                  C.intersect(
+                    C.struct({
+                      access_right: C.literal('embargoed'),
+                      embargo_date: PlainDateC,
+                    }),
+                  ),
+                ),
+              }).encode(record as never)
+          }
+        },
       },
     ),
   ),
@@ -1027,6 +1051,22 @@ export const DepositionC: Codec<string, string, Deposition> =
 // -------------------------------------------------------------------------------------
 // utils
 // -------------------------------------------------------------------------------------
+
+/**
+ * @since 0.1.19
+ */
+export function isOpenRecord(record: Record): record is Extract<Record, { metadata: { access_right: 'open' } }> {
+  return record.metadata.access_right === 'open'
+}
+
+/**
+ * @since 0.1.19
+ */
+export function isEmbargoedRecord(
+  record: Record,
+): record is Extract<Record, { metadata: { access_right: 'embargoed' } }> {
+  return record.metadata.access_right === 'embargoed'
+}
 
 const zenodoUrl = (path: string) =>
   R.asks(({ zenodoUrl }: ZenodoEnv) => new URL(`/api/${path}`, zenodoUrl ?? 'https://zenodo.org/'))
