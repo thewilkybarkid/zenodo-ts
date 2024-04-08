@@ -171,6 +171,11 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
               .map(date => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))),
           }),
         }),
+        fc.record({
+          metadata: fc.record({
+            access_right: fc.constant('restricted' as const),
+          }),
+        }),
       ),
       fc.record(
         {

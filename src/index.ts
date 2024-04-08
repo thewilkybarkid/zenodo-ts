@@ -124,6 +124,7 @@ export type Record = {
       metadata: { access_right: 'open' }
     }
   | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
+  | { metadata: { access_right: 'restricted' } }
 )
 
 /**
@@ -822,6 +823,9 @@ const BaseRecordC = pipe(
             C.intersect(C.struct({ access_right: C.literal('embargoed'), embargo_date: PlainDateC })),
           ),
         }),
+        C.struct({
+          metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('restricted') }))),
+        }),
       ),
       {
         encode: record => {
@@ -842,6 +846,10 @@ const BaseRecordC = pipe(
                     }),
                   ),
                 ),
+              }).encode(record as never)
+            case 'restricted':
+              return C.struct({
+                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('restricted') }))),
               }).encode(record as never)
           }
         },
@@ -1066,6 +1074,15 @@ export function isEmbargoedRecord(
   record: Record,
 ): record is Extract<Record, { metadata: { access_right: 'embargoed' } }> {
   return record.metadata.access_right === 'embargoed'
+}
+
+/**
+ * @since 0.1.19
+ */
+export function isRestrictedRecord(
+  record: Record,
+): record is Extract<Record, { metadata: { access_right: 'restricted' } }> {
+  return record.metadata.access_right === 'restricted'
 }
 
 const zenodoUrl = (path: string) =>

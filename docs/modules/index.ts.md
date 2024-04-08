@@ -50,6 +50,7 @@ Added in v0.1.0
 - [utils](#utils)
   - [isEmbargoedRecord](#isembargoedrecord)
   - [isOpenRecord](#isopenrecord)
+  - [isRestrictedRecord](#isrestrictedrecord)
 
 ---
 
@@ -488,6 +489,7 @@ export type Record = {
       metadata: { access_right: 'open' }
     }
   | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
+  | { metadata: { access_right: 'restricted' } }
 )
 ```
 
@@ -639,6 +641,18 @@ Added in v0.1.19
 
 ```ts
 export declare function isOpenRecord(record: Record): record is Extract<Record, { metadata: { access_right: 'open' } }>
+```
+
+Added in v0.1.19
+
+## isRestrictedRecord
+
+**Signature**
+
+```ts
+export declare function isRestrictedRecord(
+  record: Record
+): record is Extract<Record, { metadata: { access_right: 'restricted' } }>
 ```
 
 Added in v0.1.19
