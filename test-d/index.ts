@@ -40,6 +40,8 @@ declare const zenodoEnv: ZenodoEnv
 // Record
 //
 
+expectTypeOf(record.conceptdoi).toEqualTypeOf<Doi | undefined>()
+expectTypeOf(record.conceptrecid).toEqualTypeOf<number>()
 if ('files' in record) {
   expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
   expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()

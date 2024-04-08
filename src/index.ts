@@ -35,7 +35,7 @@ import Response = F.Response
  * @since 0.1.0
  */
 export type Record = {
-  conceptdoi: Doi
+  conceptdoi?: Doi
   conceptrecid: number
   id: number
   links: {
@@ -796,7 +796,6 @@ const BaseRecordMetadataC = pipe(
 
 const BaseRecordC = pipe(
   C.struct({
-    conceptdoi: DoiC,
     conceptrecid: NumberFromStringC,
     id: C.number,
     links: C.struct({
@@ -804,6 +803,11 @@ const BaseRecordC = pipe(
       latest_html: UrlC,
     }),
   }),
+  C.intersect(
+    C.partial({
+      conceptdoi: DoiC,
+    }),
+  ),
   C.intersect(
     C.make(
       D.union(

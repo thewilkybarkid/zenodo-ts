@@ -60,7 +60,6 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
   fc
     .tuple(
       fc.record({
-        conceptdoi: doi(),
         conceptrecid: fc.integer(),
         id: fc.integer(),
         links: fc.record({
@@ -169,52 +168,56 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
           }),
         }),
       ),
-      fc.record({
-        metadata: fc.record(
-          {
-            communities: fc
-              .array(
-                fc.record({
-                  id: fc.string(),
-                }),
-                { minLength: 1 },
-              )
-              .filter(isNonEmpty),
-            contributors: fc
-              .array(
-                fc.record(
-                  {
-                    name: fc.string(),
-                    orcid: orcid(),
-                    type: fc.string(),
-                  },
-                  { requiredKeys: ['name', 'type'] },
-                ),
-                { minLength: 1 },
-              )
-              .filter(isNonEmpty),
-            description: fc.string(),
-            keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
-            notes: fc.string(),
-            related_identifiers: fc
-              .array(
-                fc.record(
-                  {
-                    scheme: fc.string(),
-                    identifier: fc.string(),
-                    relation: fc.string(),
-                    resource_type: fc.string(),
-                  },
-                  { requiredKeys: ['scheme', 'identifier', 'relation'] },
-                ),
-                { minLength: 1 },
-              )
-              .filter(isNonEmpty),
-            language: fc.string(),
-          },
-          { withDeletedKeys: true },
-        ),
-      }),
+      fc.record(
+        {
+          conceptdoi: doi(),
+          metadata: fc.record(
+            {
+              communities: fc
+                .array(
+                  fc.record({
+                    id: fc.string(),
+                  }),
+                  { minLength: 1 },
+                )
+                .filter(isNonEmpty),
+              contributors: fc
+                .array(
+                  fc.record(
+                    {
+                      name: fc.string(),
+                      orcid: orcid(),
+                      type: fc.string(),
+                    },
+                    { requiredKeys: ['name', 'type'] },
+                  ),
+                  { minLength: 1 },
+                )
+                .filter(isNonEmpty),
+              description: fc.string(),
+              keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
+              notes: fc.string(),
+              related_identifiers: fc
+                .array(
+                  fc.record(
+                    {
+                      scheme: fc.string(),
+                      identifier: fc.string(),
+                      relation: fc.string(),
+                      resource_type: fc.string(),
+                    },
+                    { requiredKeys: ['scheme', 'identifier', 'relation'] },
+                  ),
+                  { minLength: 1 },
+                )
+                .filter(isNonEmpty),
+              language: fc.string(),
+            },
+            { withDeletedKeys: true },
+          ),
+        },
+        { withDeletedKeys: true },
+      ),
     )
     .map(records => merge.withOptions({ mergeArrays: false }, ...records))
 

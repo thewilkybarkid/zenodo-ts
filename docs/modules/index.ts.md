@@ -396,7 +396,7 @@ Added in v0.1.17
 
 ```ts
 export type Record = {
-  conceptdoi: Doi
+  conceptdoi?: Doi
   conceptrecid: number
   id: number
   links: {
