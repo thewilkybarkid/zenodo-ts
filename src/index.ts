@@ -37,13 +37,6 @@ import Response = F.Response
 export type Record = {
   conceptdoi: Doi
   conceptrecid: number
-  files: NonEmptyArray<{
-    key: string
-    links: {
-      self: URL
-    }
-    size: number
-  }>
   id: number
   links: {
     latest: URL
@@ -119,7 +112,18 @@ export type Record = {
         }
     title: string
   }
-}
+} & (
+  | {
+      files: NonEmptyArray<{
+        key: string
+        links: {
+          self: URL
+        }
+        size: number
+      }>
+    }
+  | { metadata: { embargo_date: Date } }
+)
 
 /**
  * @category model
@@ -718,87 +722,105 @@ const UploadTypeC = C.sum('upload_type')({
   }),
 })
 
-const BaseRecordC = C.struct({
-  conceptdoi: DoiC,
-  conceptrecid: NumberFromStringC,
-  id: C.number,
-  files: NonEmptyArrayC(
-    C.struct({
-      key: C.string,
-      links: C.struct({
-        self: UrlC,
-      }),
-      size: C.number,
-    }),
-  ),
+const FileC = C.struct({
+  key: C.string,
   links: C.struct({
-    latest: UrlC,
-    latest_html: UrlC,
+    self: UrlC,
   }),
-  metadata: pipe(
-    C.struct({
-      creators: NonEmptyArrayC(
-        pipe(
-          C.struct({
-            name: C.string,
+  size: C.number,
+})
+
+const BaseRecordMetadataC = pipe(
+  C.struct({
+    creators: NonEmptyArrayC(
+      pipe(
+        C.struct({
+          name: C.string,
+        }),
+        C.intersect(
+          C.partial({
+            orcid: OrcidC,
           }),
-          C.intersect(
-            C.partial({
-              orcid: OrcidC,
-            }),
-          ),
         ),
       ),
-      description: C.string,
-      doi: DoiC,
-      license: C.struct({
-        id: C.string,
-      }),
-      publication_date: PlainDateC,
-      resource_type: ResourceTypeC,
-      title: C.string,
+    ),
+    description: C.string,
+    doi: DoiC,
+    license: C.struct({
+      id: C.string,
     }),
-    C.intersect(
-      C.partial({
-        communities: pipe(
-          C.array(C.struct({ id: C.string })),
-          C.imap(
-            A.match(() => undefined, identity),
-            communities => (communities ?? []) as never,
-          ),
+    publication_date: PlainDateC,
+    resource_type: ResourceTypeC,
+    title: C.string,
+  }),
+  C.intersect(
+    C.partial({
+      communities: pipe(
+        C.array(C.struct({ id: C.string })),
+        C.imap(
+          A.match(() => undefined, identity),
+          communities => (communities ?? []) as never,
         ),
-        contributors: pipe(
-          C.array(
-            pipe(
-              C.struct({
-                name: C.string,
-                type: C.string,
+      ),
+      contributors: pipe(
+        C.array(
+          pipe(
+            C.struct({
+              name: C.string,
+              type: C.string,
+            }),
+            C.intersect(
+              C.partial({
+                orcid: OrcidC,
               }),
-              C.intersect(
-                C.partial({
-                  orcid: OrcidC,
-                }),
-              ),
             ),
           ),
-          C.imap(
-            A.match(() => undefined, identity),
-            contributors => (contributors ?? []) as never,
-          ),
         ),
-        keywords: NonEmptyArrayC(C.string),
-        language: C.string,
-        notes: C.string,
-        related_identifiers: NonEmptyArrayC(
-          pipe(
-            C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
-            C.intersect(C.partial({ resource_type: C.string })),
-          ),
+        C.imap(
+          A.match(() => undefined, identity),
+          contributors => (contributors ?? []) as never,
         ),
-      }),
+      ),
+      keywords: NonEmptyArrayC(C.string),
+      language: C.string,
+      notes: C.string,
+      related_identifiers: NonEmptyArrayC(
+        pipe(
+          C.struct({ identifier: C.string, scheme: C.string, relation: C.string }),
+          C.intersect(C.partial({ resource_type: C.string })),
+        ),
+      ),
+    }),
+  ),
+)
+
+const BaseRecordC = pipe(
+  C.struct({
+    conceptdoi: DoiC,
+    conceptrecid: NumberFromStringC,
+    id: C.number,
+    links: C.struct({
+      latest: UrlC,
+      latest_html: UrlC,
+    }),
+  }),
+  C.intersect(
+    C.make(
+      D.union(
+        C.struct({ metadata: BaseRecordMetadataC, files: NonEmptyArrayC(FileC) }),
+        C.struct({ metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ embargo_date: PlainDateC }))) }),
+      ),
+      {
+        encode: record =>
+          'files' in record
+            ? C.struct({ metadata: BaseRecordMetadataC, files: NonEmptyArrayC(FileC) }).encode(record)
+            : C.struct({
+                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ embargo_date: PlainDateC }))),
+              }).encode(record),
+      },
     ),
   ),
-})
+)
 
 const DepositMetadataC = pipe(
   C.struct({

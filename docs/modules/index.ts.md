@@ -398,13 +398,6 @@ Added in v0.1.17
 export type Record = {
   conceptdoi: Doi
   conceptrecid: number
-  files: NonEmptyArray<{
-    key: string
-    links: {
-      self: URL
-    }
-    size: number
-  }>
   id: number
   links: {
     latest: URL
@@ -480,7 +473,18 @@ export type Record = {
         }
     title: string
   }
-}
+} & (
+  | {
+      files: NonEmptyArray<{
+        key: string
+        links: {
+          self: URL
+        }
+        size: number
+      }>
+    }
+  | { metadata: { embargo_date: Date } }
+)
 ```
 
 Added in v0.1.0

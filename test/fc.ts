@@ -62,18 +62,6 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
       fc.record({
         conceptdoi: doi(),
         conceptrecid: fc.integer(),
-        files: fc
-          .array(
-            fc.record({
-              key: fc.string(),
-              links: fc.record({
-                self: url(),
-              }),
-              size: fc.integer(),
-            }),
-            { minLength: 1 },
-          )
-          .filter(isNonEmpty),
         id: fc.integer(),
         links: fc.record({
           latest: url(),
@@ -159,6 +147,29 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
           title: fc.string(),
         }),
       }),
+      fc.oneof(
+        fc.record({
+          files: fc
+            .array(
+              fc.record({
+                key: fc.string(),
+                links: fc.record({
+                  self: url(),
+                }),
+                size: fc.integer(),
+              }),
+              { minLength: 1 },
+            )
+            .filter(isNonEmpty),
+        }),
+        fc.record({
+          metadata: fc.record({
+            embargo_date: fc
+              .date({ min: new Date('0000-01-01T00:00:00.000Z'), max: new Date('9999-12-31T23:59:59.999Z') })
+              .map(date => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))),
+          }),
+        }),
+      ),
       fc.record({
         metadata: fc.record(
           {

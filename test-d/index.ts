@@ -40,9 +40,15 @@ declare const zenodoEnv: ZenodoEnv
 // Record
 //
 
-expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
-expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()
-expectTypeOf(record.files[0].size).toEqualTypeOf<number>()
+if ('files' in record) {
+  expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
+  expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()
+  expectTypeOf(record.files[0].size).toEqualTypeOf<number>()
+  // @ts-expect-error
+  expectTypeOf(record.metadata.embargo_date).toBeUndefined()
+} else {
+  expectTypeOf(record.metadata.embargo_date).toEqualTypeOf<Date>()
+}
 expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.links.latest).toEqualTypeOf<URL>()
 expectTypeOf(record.links.latest_html).toEqualTypeOf<URL>()
