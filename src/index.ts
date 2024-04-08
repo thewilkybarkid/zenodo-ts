@@ -92,11 +92,11 @@ export type Record = {
         }
       | {
           type: 'image'
-          subtype: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
+          subtype?: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
         }
       | {
           type: 'publication'
-          subtype:
+          subtype?:
             | 'annotationcollection'
             | 'article'
             | 'book'
@@ -597,10 +597,16 @@ const ResourceTypeC = C.sum('type')({
   figure: C.struct({
     type: C.literal('figure'),
   }),
-  image: C.struct({
-    subtype: C.literal('figure', 'plot', 'drawing', 'diagram', 'photo', 'other'),
-    type: C.literal('image'),
-  }),
+  image: pipe(
+    C.struct({
+      type: C.literal('image'),
+    }),
+    C.intersect(
+      C.partial({
+        subtype: C.literal('figure', 'plot', 'drawing', 'diagram', 'photo', 'other'),
+      }),
+    ),
+  ),
   lesson: C.struct({
     type: C.literal('lesson'),
   }),
@@ -616,30 +622,36 @@ const ResourceTypeC = C.sum('type')({
   presentation: C.struct({
     type: C.literal('presentation'),
   }),
-  publication: C.struct({
-    subtype: C.literal(
-      'annotationcollection',
-      'book',
-      'section',
-      'conferencepaper',
-      'datamanagementplan',
-      'article',
-      'patent',
-      'peerreview',
-      'preprint',
-      'deliverable',
-      'milestone',
-      'proposal',
-      'report',
-      'softwaredocumentation',
-      'taxonomictreatment',
-      'technicalnote',
-      'thesis',
-      'workingpaper',
-      'other',
+  publication: pipe(
+    C.struct({
+      type: C.literal('publication'),
+    }),
+    C.intersect(
+      C.partial({
+        subtype: C.literal(
+          'annotationcollection',
+          'book',
+          'section',
+          'conferencepaper',
+          'datamanagementplan',
+          'article',
+          'patent',
+          'peerreview',
+          'preprint',
+          'deliverable',
+          'milestone',
+          'proposal',
+          'report',
+          'softwaredocumentation',
+          'taxonomictreatment',
+          'technicalnote',
+          'thesis',
+          'workingpaper',
+          'other',
+        ),
+      }),
     ),
-    type: C.literal('publication'),
-  }),
+  ),
   software: C.struct({
     type: C.literal('software'),
   }),

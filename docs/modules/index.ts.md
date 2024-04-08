@@ -453,11 +453,11 @@ export type Record = {
         }
       | {
           type: 'image'
-          subtype: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
+          subtype?: 'diagram' | 'drawing' | 'figure' | 'other' | 'photo' | 'plot'
         }
       | {
           type: 'publication'
-          subtype:
+          subtype?:
             | 'annotationcollection'
             | 'article'
             | 'book'
