@@ -1,7 +1,7 @@
 {
   "name": "zenodo-ts",
   "description": "A Zenodo API client for use with fp-ts.",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "license": "MIT",
   "homepage": "https://github.com/thewilkybarkid/zenodo-ts",
   "repository": "github:thewilkybarkid/zenodo-ts",

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.18](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.17...v0.1.18) (2024-04-08)
+
+
+### Bug Fixes
+
+* decode records where there is no subtype ([c4004e4](https://github.com/thewilkybarkid/zenodo-ts/commit/c4004e43b81c523072a33a41117c3d181b76b643))
+
 ### [0.1.17](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.16...v0.1.17) (2024-01-15)
 
 
