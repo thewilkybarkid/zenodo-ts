@@ -55,7 +55,7 @@ export type Record = {
       name: string
       orcid?: Orcid
     }>
-    description: string
+    description?: string
     doi: Doi
     language?: string
     license: {
@@ -744,7 +744,6 @@ const BaseRecordMetadataC = pipe(
         ),
       ),
     ),
-    description: C.string,
     doi: DoiC,
     license: C.struct({
       id: C.string,
@@ -781,6 +780,7 @@ const BaseRecordMetadataC = pipe(
           contributors => (contributors ?? []) as never,
         ),
       ),
+      description: C.string,
       keywords: NonEmptyArrayC(C.string),
       language: C.string,
       notes: C.string,

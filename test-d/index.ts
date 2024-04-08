@@ -53,7 +53,7 @@ expectTypeOf(record.id).toEqualTypeOf<number>()
 expectTypeOf(record.links.latest).toEqualTypeOf<URL>()
 expectTypeOf(record.links.latest_html).toEqualTypeOf<URL>()
 expectTypeOf(record.metadata.creators).toEqualTypeOf<NonEmptyArray<{ name: string; orcid?: Orcid }>>()
-expectTypeOf(record.metadata.description).toEqualTypeOf<string>()
+expectTypeOf(record.metadata.description).toEqualTypeOf<string | undefined>()
 expectTypeOf(record.metadata.doi).toEqualTypeOf<Doi>()
 expectTypeOf(record.metadata.related_identifiers).toEqualTypeOf<
   NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined

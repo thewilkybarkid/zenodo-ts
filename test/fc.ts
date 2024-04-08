@@ -80,7 +80,6 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
               { minLength: 1 },
             )
             .filter(isNonEmpty),
-          description: fc.string(),
           doi: doi(),
           license: fc.record({
             id: fc.string(),
@@ -194,6 +193,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 { minLength: 1 },
               )
               .filter(isNonEmpty),
+            description: fc.string(),
             keywords: fc.array(fc.string(), { minLength: 1 }).filter(isNonEmpty),
             notes: fc.string(),
             related_identifiers: fc

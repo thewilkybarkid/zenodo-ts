@@ -416,7 +416,7 @@ export type Record = {
       name: string
       orcid?: Orcid
     }>
-    description: string
+    description?: string
     doi: Doi
     language?: string
     license: {
