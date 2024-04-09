@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.19](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.18...v0.1.19) (2024-04-09)
+
+
+### Features
+
+* add access_right to Record ([f4bc2f3](https://github.com/thewilkybarkid/zenodo-ts/commit/f4bc2f32a65517eb422245efe49da42b8f5df8b2))
+
+
+### Bug Fixes
+
+* decode embargoed records ([6e6a796](https://github.com/thewilkybarkid/zenodo-ts/commit/6e6a7969cc349c212f556cd4f08d16bfcc37166f))
+* decode records without a concept DOI ([6145f49](https://github.com/thewilkybarkid/zenodo-ts/commit/6145f49fe751be5de31cdc5c1060f43b9cf1e723))
+* decode records without a description ([f9909c9](https://github.com/thewilkybarkid/zenodo-ts/commit/f9909c95cadea083f7c6f233a731a660f45a5190))
+* decode restricted records ([5a36826](https://github.com/thewilkybarkid/zenodo-ts/commit/5a36826dbe81d6b4e33f5eda69c89868e8ec9875))
+
 ### [0.1.18](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.17...v0.1.18) (2024-04-08)
 
 
