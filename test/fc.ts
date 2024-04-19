@@ -80,9 +80,6 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
             )
             .filter(isNonEmpty),
           doi: doi(),
-          license: fc.record({
-            id: fc.string(),
-          }),
           publication_date: fc
             .date({ min: new Date('0000-01-01T00:00:00.000Z'), max: new Date('9999-12-31T23:59:59.999Z') })
             .map(date => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))),
@@ -161,6 +158,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
             .filter(isNonEmpty),
           metadata: fc.record({
             access_right: fc.constant('open' as const),
+            license: fc.record({ id: fc.string() }),
           }),
         }),
         fc.record({
@@ -169,12 +167,17 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
             embargo_date: fc
               .date({ min: new Date('0000-01-01T00:00:00.000Z'), max: new Date('9999-12-31T23:59:59.999Z') })
               .map(date => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))),
+            license: fc.record({ id: fc.string() }),
           }),
         }),
         fc.record({
-          metadata: fc.record({
-            access_right: fc.constant('restricted' as const),
-          }),
+          metadata: fc.record(
+            {
+              access_right: fc.constant('restricted' as const),
+              license: fc.record({ id: fc.string() }),
+            },
+            { requiredKeys: ['access_right'] },
+          ),
         }),
       ),
       fc.record(

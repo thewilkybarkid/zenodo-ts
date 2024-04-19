@@ -58,9 +58,6 @@ export type Record = {
     description?: string
     doi: Doi
     language?: string
-    license: {
-      id: string
-    }
     keywords?: NonEmptyArray<string>
     notes?: string
     publication_date: Date
@@ -121,10 +118,10 @@ export type Record = {
         }
         size: number
       }>
-      metadata: { access_right: 'open' }
+      metadata: { access_right: 'open'; license: { id: string } }
     }
-  | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
-  | { metadata: { access_right: 'restricted' } }
+  | { metadata: { access_right: 'embargoed'; embargo_date: Date; license: { id: string } } }
+  | { metadata: { access_right: 'restricted'; license?: { id: string } } }
 )
 
 /**
@@ -747,9 +744,7 @@ const BaseRecordMetadataC = pipe(
       ),
     ),
     doi: DoiC,
-    license: C.struct({
-      id: C.string,
-    }),
+
     publication_date: PlainDateC,
     resource_type: ResourceTypeC,
     title: C.string,
@@ -814,17 +809,45 @@ const BaseRecordC = pipe(
     C.make(
       D.union(
         C.struct({
-          metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('open') }))),
+          metadata: pipe(
+            BaseRecordMetadataC,
+            C.intersect(
+              C.struct({
+                access_right: C.literal('open'),
+                license: C.struct({
+                  id: C.string,
+                }),
+              }),
+            ),
+          ),
           files: NonEmptyArrayC(FileC),
         }),
         C.struct({
           metadata: pipe(
             BaseRecordMetadataC,
-            C.intersect(C.struct({ access_right: C.literal('embargoed'), embargo_date: PlainDateC })),
+            C.intersect(
+              C.struct({
+                access_right: C.literal('embargoed'),
+                embargo_date: PlainDateC,
+                license: C.struct({
+                  id: C.string,
+                }),
+              }),
+            ),
           ),
         }),
         C.struct({
-          metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('restricted') }))),
+          metadata: pipe(
+            BaseRecordMetadataC,
+            C.intersect(C.struct({ access_right: C.literal('restricted') })),
+            C.intersect(
+              C.partial({
+                license: C.struct({
+                  id: C.string,
+                }),
+              }),
+            ),
+          ),
         }),
       ),
       {
@@ -832,7 +855,17 @@ const BaseRecordC = pipe(
           switch (record.metadata.access_right) {
             case 'open':
               return C.struct({
-                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('open') }))),
+                metadata: pipe(
+                  BaseRecordMetadataC,
+                  C.intersect(
+                    C.struct({
+                      access_right: C.literal('open'),
+                      license: C.struct({
+                        id: C.string,
+                      }),
+                    }),
+                  ),
+                ),
                 files: NonEmptyArrayC(FileC),
               }).encode(record as never)
             case 'embargoed':
@@ -843,13 +876,26 @@ const BaseRecordC = pipe(
                     C.struct({
                       access_right: C.literal('embargoed'),
                       embargo_date: PlainDateC,
+                      license: C.struct({
+                        id: C.string,
+                      }),
                     }),
                   ),
                 ),
               }).encode(record as never)
             case 'restricted':
               return C.struct({
-                metadata: pipe(BaseRecordMetadataC, C.intersect(C.struct({ access_right: C.literal('restricted') }))),
+                metadata: pipe(
+                  BaseRecordMetadataC,
+                  C.intersect(C.struct({ access_right: C.literal('restricted') })),
+                  C.intersect(
+                    C.partial({
+                      license: C.struct({
+                        id: C.string,
+                      }),
+                    }),
+                  ),
+                ),
               }).encode(record as never)
           }
         },

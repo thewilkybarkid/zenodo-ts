@@ -45,6 +45,7 @@ expectTypeOf(record.conceptrecid).toEqualTypeOf<number>()
 expectTypeOf(record.metadata.access_right).toEqualTypeOf<'open' | 'embargoed' | 'restricted'>()
 if (_.isOpenRecord(record)) {
   expectTypeOf(record.metadata.access_right).toEqualTypeOf<'open'>()
+  expectTypeOf(record.metadata.license).toEqualTypeOf<{ id: string }>()
   expectTypeOf(record.files[0].key).toEqualTypeOf<string>()
   expectTypeOf(record.files[0].links.self).toEqualTypeOf<URL>()
   expectTypeOf(record.files[0].size).toEqualTypeOf<number>()
@@ -53,10 +54,12 @@ if (_.isOpenRecord(record)) {
 } else if (_.isEmbargoedRecord(record)) {
   expectTypeOf(record.metadata.access_right).toEqualTypeOf<'embargoed'>()
   expectTypeOf(record.metadata.embargo_date).toEqualTypeOf<Date>()
+  expectTypeOf(record.metadata.license).toEqualTypeOf<{ id: string }>()
   // @ts-expect-error
   expectTypeOf(record.metadata.files).toBeUndefined()
 } else if (_.isRestrictedRecord(record)) {
   expectTypeOf(record.metadata.access_right).toEqualTypeOf<'restricted'>()
+  expectTypeOf(record.metadata.license).toEqualTypeOf<{ id: string } | undefined>()
   // @ts-expect-error
   expectTypeOf(record.metadata.embargo_date).toBeUndefined()
   // @ts-expect-error

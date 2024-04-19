@@ -423,9 +423,6 @@ export type Record = {
     description?: string
     doi: Doi
     language?: string
-    license: {
-      id: string
-    }
     keywords?: NonEmptyArray<string>
     notes?: string
     publication_date: Date
@@ -486,10 +483,10 @@ export type Record = {
         }
         size: number
       }>
-      metadata: { access_right: 'open' }
+      metadata: { access_right: 'open'; license: { id: string } }
     }
-  | { metadata: { access_right: 'embargoed'; embargo_date: Date } }
-  | { metadata: { access_right: 'restricted' } }
+  | { metadata: { access_right: 'embargoed'; embargo_date: Date; license: { id: string } } }
+  | { metadata: { access_right: 'restricted'; license?: { id: string } } }
 )
 ```
 
