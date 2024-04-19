@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.20](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.19...v0.1.20) (2024-04-19)
+
+
+### Bug Fixes
+
+* decode records with a datapaper subtype ([e57b812](https://github.com/thewilkybarkid/zenodo-ts/commit/e57b8122d6edfe1fb0dd0f49ed277a9180b53985))
+* decode restricted records without a license ([50ce597](https://github.com/thewilkybarkid/zenodo-ts/commit/50ce5971a20dff1275a2a0fb69497c94377e67b2))
+
 ### [0.1.19](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.18...v0.1.19) (2024-04-09)
 
 
