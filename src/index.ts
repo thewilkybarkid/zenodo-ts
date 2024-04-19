@@ -92,6 +92,7 @@ export type Record = {
             | 'book'
             | 'conferencepaper'
             | 'datamanagementplan'
+            | 'datapaper'
             | 'deliverable'
             | 'milestone'
             | 'other'
@@ -637,6 +638,7 @@ const ResourceTypeC = C.sum('type')({
           'section',
           'conferencepaper',
           'datamanagementplan',
+          'datapaper',
           'article',
           'patent',
           'peerreview',

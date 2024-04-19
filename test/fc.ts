@@ -120,6 +120,7 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                   'book' as const,
                   'conferencepaper' as const,
                   'datamanagementplan' as const,
+                  'datapaper' as const,
                   'deliverable' as const,
                   'milestone' as const,
                   'other' as const,

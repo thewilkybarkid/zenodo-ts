@@ -457,6 +457,7 @@ export type Record = {
             | 'book'
             | 'conferencepaper'
             | 'datamanagementplan'
+            | 'datapaper'
             | 'deliverable'
             | 'milestone'
             | 'other'
