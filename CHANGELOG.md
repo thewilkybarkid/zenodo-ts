@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.20...v0.1.21) (2024-05-30)
+
+
+### Features
+
+* add subjects to Record and DepositMetadata ([5933e27](https://github.com/thewilkybarkid/zenodo-ts/commit/5933e27fb479f2fea9c09b4f7051a6e6dda16e8d))
+
 ### [0.1.20](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.19...v0.1.20) (2024-04-19)
 
 
