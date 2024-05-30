@@ -108,6 +108,11 @@ export type Record = {
             | 'thesis'
             | 'workingpaper'
         }
+    subjects?: NonEmptyArray<{
+      scheme: string
+      identifier: string
+      term: string
+    }>
     title: string
   }
 } & (
@@ -152,6 +157,11 @@ export type DepositMetadata = {
     identifier: string
     relation: string
     resource_type?: string
+  }>
+  subjects?: NonEmptyArray<{
+    scheme: string
+    identifier: string
+    term: string
   }>
   title: string
 } & (
@@ -789,6 +799,7 @@ const BaseRecordMetadataC = pipe(
           C.intersect(C.partial({ resource_type: C.string })),
         ),
       ),
+      subjects: NonEmptyArrayC(C.struct({ identifier: C.string, scheme: C.string, term: C.string })),
     }),
   ),
 )
@@ -949,6 +960,7 @@ const DepositMetadataC = pipe(
           C.intersect(C.partial({ resource_type: C.string })),
         ),
       ),
+      subjects: NonEmptyArrayC(C.struct({ identifier: C.string, scheme: C.string, term: C.string })),
     }),
   ),
   C.intersect(UploadTypeC),

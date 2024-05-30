@@ -225,6 +225,16 @@ export const zenodoRecord = (): fc.Arbitrary<_.Record> =>
                 )
                 .filter(isNonEmpty),
               language: fc.string(),
+              subjects: fc
+                .array(
+                  fc.record({
+                    scheme: fc.string(),
+                    identifier: fc.string(),
+                    term: fc.string(),
+                  }),
+                  { minLength: 1 },
+                )
+                .filter(isNonEmpty),
             },
             { withDeletedKeys: true },
           ),
@@ -301,6 +311,16 @@ export const zenodoDepositMetadata = (): fc.Arbitrary<_.DepositMetadata> =>
                 },
                 { requiredKeys: ['scheme', 'identifier', 'relation'] },
               ),
+              { minLength: 1 },
+            )
+            .filter(isNonEmpty),
+          subjects: fc
+            .array(
+              fc.record({
+                scheme: fc.string(),
+                identifier: fc.string(),
+                term: fc.string(),
+              }),
               { minLength: 1 },
             )
             .filter(isNonEmpty),

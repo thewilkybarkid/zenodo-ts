@@ -291,6 +291,11 @@ export type DepositMetadata = {
     relation: string
     resource_type?: string
   }>
+  subjects?: NonEmptyArray<{
+    scheme: string
+    identifier: string
+    term: string
+  }>
   title: string
 } & (
   | {
@@ -473,6 +478,11 @@ export type Record = {
             | 'thesis'
             | 'workingpaper'
         }
+    subjects?: NonEmptyArray<{
+      scheme: string
+      identifier: string
+      term: string
+    }>
     title: string
   }
 } & (
