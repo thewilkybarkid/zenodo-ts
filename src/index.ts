@@ -150,7 +150,9 @@ export type DepositMetadata = {
   description: string
   imprint_publisher?: string
   keywords?: NonEmptyArray<string>
+  language?: string
   license?: string
+  notes?: string
   publication_date?: Date
   related_identifiers?: NonEmptyArray<{
     scheme: string
@@ -952,7 +954,9 @@ const DepositMetadataC = pipe(
       ),
       keywords: NonEmptyArrayC(C.string),
       imprint_publisher: C.string,
+      language: C.string,
       license: C.string,
+      notes: C.string,
       publication_date: PlainDateC,
       related_identifiers: NonEmptyArrayC(
         pipe(

@@ -283,7 +283,9 @@ export type DepositMetadata = {
   description: string
   imprint_publisher?: string
   keywords?: NonEmptyArray<string>
+  language?: string
   license?: string
+  notes?: string
   publication_date?: Date
   related_identifiers?: NonEmptyArray<{
     scheme: string

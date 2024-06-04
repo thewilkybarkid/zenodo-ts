@@ -91,7 +91,9 @@ expectTypeOf(depositMetadata.creators).toEqualTypeOf<NonEmptyArray<{ name: strin
 expectTypeOf(depositMetadata.description).toEqualTypeOf<string>()
 expectTypeOf(depositMetadata.publication_date).toEqualTypeOf<Date | undefined>()
 expectTypeOf(depositMetadata.imprint_publisher).toEqualTypeOf<string | undefined>()
+expectTypeOf(depositMetadata.language).toEqualTypeOf<string | undefined>()
 expectTypeOf(depositMetadata.license).toEqualTypeOf<string | undefined>()
+expectTypeOf(depositMetadata.notes).toEqualTypeOf<string | undefined>()
 expectTypeOf(depositMetadata.related_identifiers).toEqualTypeOf<
   NonEmptyArray<{ scheme: string; identifier: string; relation: string; resource_type?: string }> | undefined
 >()
