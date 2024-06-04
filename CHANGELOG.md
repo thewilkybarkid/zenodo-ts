@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.21...v0.1.22) (2024-06-04)
+
+
+### Features
+
+* add language and notes to DepositMetadata ([f3dbec8](https://github.com/thewilkybarkid/zenodo-ts/commit/f3dbec82c6217c24bc880d6db218f0c59cae5541))
+
 ### [0.1.21](https://github.com/thewilkybarkid/zenodo-ts/compare/v0.1.20...v0.1.21) (2024-05-30)
 
 
